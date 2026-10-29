@@ -1,0 +1,616 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>llm-semantic-weight — Semantic Weight Audit :: LLM Grammatical Categories</title><meta name="description" content="Semantic Weight Audit :: LLM Grammatical Categories"><meta name="robots" content="index, follow"><link rel="canonical" href="https://7not-nico.github.io/llm-investigations/llm-semantic-weight/"><style>body{font-family:system-ui,sans-serif;max-width:760px;margin:2rem auto;padding:0 1rem;line-height:1.6;color:#222}
+h1{font-size:1.5rem}h2{font-size:1.2rem;margin-top:1.8rem}h3{font-size:1.05rem}
+a{color:#0969da;text-decoration:none}a:hover{text-decoration:underline}
+code,pre{background:#f6f8fa;border-radius:4px}pre{padding:.6rem;overflow-x:auto}
+table{border-collapse:collapse;width:100%}th,td{border:1px solid #ddd;padding:.3rem .5rem;font-size:.9rem}
+nav{background:#f6f8fa;border:1px solid #ddd;border-radius:6px;padding:.5rem .8rem;margin-bottom:1.5rem}
+nav a{margin-right:.6rem;white-space:nowrap}.foot{margin-top:2rem;color:#666;font-size:.85rem}
+</style></head><body><nav>
+<a href="../">home</a>
+<a href="../llm-item-omission/">item-omission</a>
+<a href="../llm-operator-meta-audit/">operator-meta-audit</a>
+<a href="../llm-semantic-weight/">semantic-weight</a>
+<a href="../llm-specification-gotcha-contraction/">specification-gotcha</a>
+</nav><h1>Semantic Weight Audit :: LLM Grammatical Categories</h1><h1 id="semantic-weight-audit-llm-grammatical-categories">Semantic Weight Audit :: LLM Grammatical Categories</h1>
+<p><strong>Date</strong>: 2026-07-19
+<strong>Method</strong>: 2026 ACL/ICML/CoNLL/SCiL mechanistic interpretability paper survey
+<strong>Status</strong>: COMPLETE</p>
+<hr />
+<h2 id="core-question">Core Question</h2>
+<p>Audit measures semantic weight sort → LLM grammatical categories → internal representations → communication circuits.</p>
+<hr />
+<h2 id="authoritative-2026-sources">Authoritative 2026 Sources</h2>
+<table>
+<thead>
+<tr>
+<th>Paper</th>
+<th>Venue</th>
+<th>Authors</th>
+<th>Finding</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><em>Differential syntactic and semantic encoding in LLMs</em></td>
+<td>ICML 2026</td>
+<td>—</td>
+<td>Syntax/semantics partially separable. Removing syntax harms semantics; removing semantics preserves syntax. Asymmetric dependency.</td>
+</tr>
+<tr>
+<td><em>Different types of syntactic agreement recruit the same units</em></td>
+<td>ACL 2026</td>
+<td>Kryvosheieva, de Varda, Fedorenko, Tuckute</td>
+<td>Agreement categories (subject-verb: 40.29%, anaphor: 23.10%, determiner-noun: 68.91%) recruit <strong>overlapping</strong> units. Agreement as functional category. Cross-lingual in 57 languages.</td>
+</tr>
+<tr>
+<td><em>Emergence and Localisation of Semantic Role Circuits</em></td>
+<td>Findings ACL 2026</td>
+<td>Aljaafari, Carvalho, Freitas</td>
+<td>Semantic roles encoded in <strong>89-92% within 28 nodes</strong>. Gradual emergence, not phase transitions. 24-51% component overlap across scales.</td>
+</tr>
+<tr>
+<td><em>Where meaning lives: Layer-wise accessibility</em></td>
+<td>Findings ACL 2026</td>
+<td>~~Skean et al.~~ <strong>ATTRIBUTION REFUTED — Tikhomirova &amp; Wulff</strong> (arXiv:2601.03798); verdict: <code>granular-investigation/whose-paper-is-where-meaning-lives.md</code>. "Skean et al." is arXiv:2502.02013, a different paper. The finding stands under the correct authors.</td>
+<td>Lexical properties peak early; affective/semantic in middle. Final layer <strong>never optimal</strong> for psycholinguistic features. Depth ordering shared across architectures.</td>
+</tr>
+<tr>
+<td><em>Fine-Grained Analysis of Shared Syntactic Mechanisms</em></td>
+<td>ACL 2026</td>
+<td>—</td>
+<td>Filler-gap dependencies: shared mechanism in heads 7.5, 7.6, 9.2 (early-middle). NPI licensing: construction-specific (syntax+semantics integration).</td>
+</tr>
+<tr>
+<td><em>Conceptual Hierarchies within LLMs</em></td>
+<td>Findings ACL 2026</td>
+<td>Almeida, Zhu, Ning</td>
+<td>Finer-grained concepts stored <strong>before</strong> coarser ones (61-78%, p&lt;0.01). Attention-level variability suggests distributed storage.</td>
+</tr>
+<tr>
+<td><em>Sparse Feature Coactivation Reveals Causal Semantic Modules</em></td>
+<td>ACL 2026</td>
+<td>—</td>
+<td>Entity components emerge <strong>layer 1</strong>. Abstract relational components in later layers. Components manipulable for steering.</td>
+</tr>
+<tr>
+<td><em>DSRA: Bridging Linguistic Structure and MI</em> (Definitional Semantic Role Analysis)</td>
+<td>CoNLL 2026</td>
+<td>—</td>
+<td><strong>Differentia_quality</strong> = 31% of high-impact definitional states. Most content-bearing DSR. MLP bimodal, MHA unimodal upper-skewed.</td>
+</tr>
+<tr>
+<td><em>Do LLMs know who did what to whom?</em></td>
+<td>arXiv</td>
+<td>Denning, Guo, Snefjella, Blank</td>
+<td>Hidden units: syntax <strong>dominates</strong> over thematic roles. Attention heads: roles <strong>robustly</strong> captured. 22 attention heads for animacy.</td>
+</tr>
+<tr>
+<td><em>The signal is coming from inside the noun phrase!</em></td>
+<td>SCiL 2026</td>
+<td>Li, Lynch, Van Schijndel</td>
+<td>Proto-role inferences localised inside <strong>noun phrases</strong>, not verbs. GCD-T method. NP is the carrier of semantic role information.</td>
+</tr>
+<tr>
+<td><em>Model Internal Sleuthing: Lexical Identity and Inflectional Features</em></td>
+<td>ACL 2026</td>
+<td>—</td>
+<td>Lexeme and inflection <strong>linearly encoded</strong> in residual streams. Attention carries less lexical info. Inflection steering (e.g., gerund -ing vs past -ed) highly effective.</td>
+</tr>
+<tr>
+<td><em>Function Words as Statistical Cues</em></td>
+<td>ACL 2026</td>
+<td>—</td>
+<td>Specialized attention heads for function words in <strong>layers 3-4</strong>. Goldilocks effect: frequent enough to be reliable, diverse enough to be informative.</td>
+</tr>
+<tr>
+<td><em>Linguistic Profiling of Transformer Embedding Geometry</em></td>
+<td>CoNLL 2026</td>
+<td>—</td>
+<td>Open-class POS (NOUNs, VERBs) = more isotropic, higher-dimensional. Closed-class (function words) = lower-dimensional. Content words have richer geometric structure.</td>
+</tr>
+<tr>
+<td><em>Derivational Probing: Layer-wise Derivation of Syntactic Structures</em></td>
+<td>CoNLL 2025</td>
+<td>—</td>
+<td>Subject-verb number agreement: specific layers construct macro-syntactic structure. Optimal timing for syntactic integration exists.</td>
+</tr>
+<tr>
+<td><em>Compositional Meaning Representations in LLMs</em> (Critical Review)</td>
+<td>StarSem 2026</td>
+<td>—</td>
+<td>Lexical/local structural regularities well-supported. <strong>Propositional/discourse representations NOT supported</strong>. Accuracy drops as abstraction increases.</td>
+</tr>
+<tr>
+<td><em>Differences in Typological Alignment</em> (Differential Argument Marking)</td>
+<td>CoNLL 2026</td>
+<td>—</td>
+<td>Models favor <strong>natural markedness</strong> (mark less usual arguments). No strong object preference — discourse pressures beyond next-token prediction.</td>
+</tr>
+<tr>
+<td><em>Part-Of-Speech Sensitivity of Routers in MoE Models</em></td>
+<td>COLING 2025</td>
+<td>Antoine, Bechet, Langlais</td>
+<td>Experts specialize for specific POS categories. Routing paths <strong>highly predictive</strong> of POS. Earlier layers encode more token-characterizing info.</td>
+</tr>
+<tr>
+<td><em>Holmes: Benchmark for Linguistic Competence</em></td>
+<td>TACL 2024</td>
+<td>—</td>
+<td>Encoder LMs outperform decoders on syntax/morphology (52% vs 21% mean winning rate). Bidirectional access matters.</td>
+</tr>
+<tr>
+<td><em>How Attention Scores in BERT Are Aware of Lexical Categories</em></td>
+<td>LREC 2024</td>
+<td>Jang, Byun, Shin</td>
+<td>Semantic tasks → attention weights increase on <strong>content words</strong>. Syntactic tasks → attention weights increase on <strong>function words</strong>. Task-agnostic layer preferences exist.</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="synthesis-llm-weight-sort">Synthesis :: LLM Weight Sort</h2>
+<h3 id="tier-1-highest-weight-syntax-agreement-relations-function-words">Tier 1 :: Highest Weight — Syntax (Agreement Relations → Function Words)</h3>
+<p><strong>Subject-verb agreement</strong> :: highest-weight grammatical relation:
+- All models allocate dedicated attention heads. Layer 2 Head 3 (BERTimbau) tracks nsubj; heads 7.5, 7.6, 9.2, filler-gap
+- Agreement categories recruit overlapping units → shared functional circuit
+- Overlap scores: determiner-noun 68.91%, subject-verb 40.29%, anaphor 23.10% (Kryvosheieva, ACL 2026)
+- Early-to-middle layers: 2-7
+- Syntactic integration has optimal timing (CoNLL 2025, Derivational Probing)
+- <strong>Function words</strong> (DET, ADP, CCONJ, SCONJ, AUX) :: specialized heads in layers 3-4 (ACL 2026)
+- Function words balance frequency (reliability) → diversity (informativeness) — Goldilocks effect
+- Semantic tasks ↑ attention on content words; syntactic tasks, function words (LREC 2024)</p>
+<h3 id="tier-2-high-weight-nouns-entity-representations">Tier 2 :: High Weight — Nouns / Entity Representations</h3>
+<ul>
+<li><strong>Entity components</strong> emerge layer 1 — earliest semantic signal (ACL 2026)</li>
+<li><strong>Noun phrases</strong> :: proto-role information carriers (SCiL 2026)</li>
+<li>Open-class words (NOUNs, VERBs) occupy higher-dimensional, isotropic subspaces &gt;&gt; closed-class (CoNLL 2026)</li>
+<li>Subject tracking uses dedicated heads :: generalization across constructions</li>
+<li>Differentia_quality (adjective-like) = 31% definitional processing weight</li>
+<li><strong>Animacy</strong> causally drives structure choice via 22 heads — passive-promoting vs passive-suppressing populations (CoNLL 2026)</li>
+<li>Lexeme → inflection :: linear encode in residual streams; residual streams carry more lexical info than attention outputs (ACL 2026)</li>
+</ul>
+<h3 id="tier-3-moderate-weight-verbs-predicate-argument-binding">Tier 3 :: Moderate Weight — Verbs / Predicate-Argument Binding</h3>
+<ul>
+<li>Predicate-argument circuits localize, emerge gradually (no phase transitions)</li>
+<li>89-92% attribution within 28 nodes — compact, syntax-dominated in hidden units</li>
+<li>Attention heads capture thematic roles robustly, independently of syntax (Denning et al.)</li>
+<li>Filler-gap dependencies share mechanisms: heads 7.5, 7.6, 9.2</li>
+<li>MoE routers specialize for specific POS — routing paths highly predictive (COLING 2025)</li>
+<li>LLMs lack propositional/discourse-level structured representations (StarSem 2026 review)</li>
+</ul>
+<h3 id="tier-4-lower-weight-gerunds-non-finite-verbals">Tier 4 :: Lower Weight — Gerunds / Non-Finite Verbals</h3>
+<ul>
+<li>Inflection steering experiments (ACL 2026) demonstrate gerund <code>-ing</code> vs past <code>-ed</code> as highly steerable via intervention vectors. Model distinguishes without dedicated circuits.</li>
+<li>Gerunds (<code>-ing</code>) :: hybrid noun+verb category</li>
+<li>Model tracks subject → action separately — dedicated gerund circuit redundant</li>
+<li><code>Gerund</code> :: Latin import to English grammar. LLMs process <code>-ing</code> through existing participle/inflection circuits, not dedicated "verbal noun" category.</li>
+<li>No dedicated studies exist for gerund processing in LLMs</li>
+</ul>
+<hr />
+<h2 id="grammatical-category-ranking-by-llm-weight">Grammatical Category Ranking by LLM Weight</h2>
+<table>
+<thead>
+<tr>
+<th>Rank</th>
+<th>Category</th>
+<th>Evidence</th>
+<th>Layer</th>
+<th>Geometric Structure</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td><strong>Subject-verb agreement</strong></td>
+<td>40.29% unit overlap; dedicated heads L2-H3, L7.5/7.6/9.2</td>
+<td>2-7</td>
+<td>Shared functional circuits</td>
+</tr>
+<tr>
+<td>2</td>
+<td><strong>Determiner-noun agreement</strong></td>
+<td>68.91% unit overlap — highest of all agreement types</td>
+<td>2-4</td>
+<td>Shared agreement subnetworks</td>
+</tr>
+<tr>
+<td>3</td>
+<td><strong>Nouns / entities</strong></td>
+<td>Emerge layer 1; NP = primary role carrier; higher-dimensional subspaces</td>
+<td>1+</td>
+<td>Most isotropic, highest linear ID</td>
+</tr>
+<tr>
+<td>4</td>
+<td><strong>Function words</strong> (DET, ADP, AUX, CCONJ)</td>
+<td>Specialized heads in layers 3-4; Goldilocks frequency effect</td>
+<td>3-4</td>
+<td>Lower-dimensional, constrained</td>
+</tr>
+<tr>
+<td>5</td>
+<td><strong>Adjective modifiers</strong> (differentia_quality)</td>
+<td>31% of definitional processing states</td>
+<td>Early + late (MLP bimodal)</td>
+<td>Content-bearing, high specificity</td>
+</tr>
+<tr>
+<td>6</td>
+<td><strong>Verbs / predicate-argument</strong></td>
+<td>89-92% in 28 nodes; syntax-dominated in hidden units</td>
+<td>Middle (MHA); early + late (MLP)</td>
+<td>High nonlinear ID postverbal</td>
+</tr>
+<tr>
+<td>7</td>
+<td><strong>Animacy features</strong></td>
+<td>Causal driver of structure choice via 22 heads</td>
+<td>Distributed</td>
+<td>Categorical encoding</td>
+</tr>
+<tr>
+<td>8</td>
+<td><strong>Adverbs / modifiers</strong></td>
+<td>Late layers, context-dependent</td>
+<td>Upper</td>
+<td>Diffuse</td>
+</tr>
+<tr>
+<td>9</td>
+<td><strong>Inflectional features</strong> (<code>-ing</code>, <code>-ed</code>, plural)</td>
+<td>Highly steerable; linearly encoded in residual stream</td>
+<td>Mid-upper</td>
+<td>Attention output less informative</td>
+</tr>
+<tr>
+<td>10</td>
+<td><strong>Gerunds / non-finite verbals</strong></td>
+<td>No dedicated circuits; processed through existing NOUN+VERB paths</td>
+<td>Via existing circuits</td>
+<td>No dedicated geometric signature</td>
+</tr>
+</tbody>
+</table>
+<h2 id="semantic-weight-hierarchy">Semantic Weight Hierarchy</h2>
+<pre><code>                    HIGHEST WEIGHT
+                           │
+               Subject-Verb Agreement
+               (shared circuits, 68-86% overlap)
+                           │
+             Determiner-Noun Agreement
+               (highest overlap: 68.91%)
+                           │
+                    Nouns/Entities
+               (emerge layer 1, NP = role carrier)
+                           │
+                   Function Words
+               (specialized heads L3-4)
+                           │
+                    Adjectives
+               (differentia_quality = 31% weight)
+                           │
+                   Predicate-Argument
+               (89-92% in 28 nodes, syntax-dominated)
+                           │
+                    Animacy
+               (22 heads, causal driver)
+                           │
+                Inflectional Features
+               (-ing/-ed steerable, linear encoding)
+                           │
+               Gerunds / Non-Finite Forms
+               (no dedicated circuits, hybrid)
+                           │
+                    LOWEST WEIGHT
+</code></pre>
+<hr />
+<hr />
+<h2 id="cross-regional-sources-new">Cross-Regional Sources (New)</h2>
+<h3 id="china-asia-pacific">China / Asia-Pacific</h3>
+<table>
+<thead>
+<tr>
+<th>Source</th>
+<th>Venue</th>
+<th>Key Finding</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Tsinghua &amp; OpenBMB (arXiv 2606.15378)</td>
+<td>2026</td>
+<td><strong>Full attention layers</strong> are the core carriers of long-text capability. RoPE removal (NoPE) improves RULER by 14.6%. "Retrieval heads" for long-distance tracking develop only in full-attention layers.</td>
+</tr>
+<tr>
+<td>Shanghai Jiao Tong Univ. — <em>When 'Features' Are No Longer Symbols</em></td>
+<td>2026</td>
+<td>LLMs shift from discrete symbolic rule systems to <strong>continuous high-dimensional vectors</strong>. Language as dynamic probabilistic system, not fixed grammar. Feature interaction via probability, not deterministic rules.</td>
+</tr>
+<tr>
+<td>Chinese Academy of Sciences — <em>Topological Framework for LLM Cognition</em></td>
+<td>2026</td>
+<td>Three principles: <strong>invariance</strong> (semantic stability under surface changes), <strong>holism</strong> (global semantics non-additive), <strong>compactness</strong> (finite-dimensional handling of infinite expressions). Attention=mechanism for topological compression of semantic space.</td>
+</tr>
+<tr>
+<td>ACL Anthology CN — <em>Attention on Multiword Expressions</em> (Zaitova et al.)</td>
+<td>Findings NAACL 2025</td>
+<td>Semantic tasks → uniform attention across layers. Syntactic tasks → <strong>increased lower-layer attention</strong> to function words. Multilingual across 6 IE languages.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="germany-dach-region">Germany / DACH Region</h3>
+<table>
+<thead>
+<tr>
+<th>Source</th>
+<th>Venue</th>
+<th>Key Finding</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Dataleap — <em>Die Transformer-Architektur</em></td>
+<td>2026</td>
+<td>Query = what element <strong>searches for</strong>. Key = what element <strong>offers</strong>. Value = actual <strong>information passed</strong>. Multi-Head = specialization on syntax, semantics, position. Lower layers = syntax; middle = complex syntax+semantics; upper = abstract.</td>
+</tr>
+<tr>
+<td>Karl Kratz — <em>Attention Heads</em></td>
+<td>2026</td>
+<td>Lower layers: <strong>local dependencies</strong> (article-noun, preposition-object). Entity-specific heads track noun phrases. Semantic heads in middle layers group thematic content. Bidirectional attention (encoder) vs causal (decoder) shapes specialization.</td>
+</tr>
+<tr>
+<td>Heise / Dr. Michael Stal — <em>Mathematik hinter Transformers</em></td>
+<td>2026</td>
+<td>Keys and Values are <strong>separated</strong> so that relevance determination (Key) differs from retrieved content (Value). Scaling by sqrt(d_k) prevents softmax saturation. Theoretical justification for why attention weight ≠ importance.</td>
+</tr>
+<tr>
+<td>Golem.de — <em>Transformer erklärt</em></td>
+<td>2026</td>
+<td>Softmax forces <strong>competitive attention</strong>: more weight for one element = less for others. Biological parallel: both systems solve information selection via weighted aggregation.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="france">France</h3>
+<table>
+<thead>
+<tr>
+<th>Source</th>
+<th>Venue</th>
+<th>Key Finding</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>CORIA-TALN — <em>Alignements entre attention et sémantique</em> (Charpentier et al.)</td>
+<td>2025</td>
+<td>Attention alignment with semantics in pretrained LMs. Constituent embedding for <strong>semantic phrase representation</strong>. Surface form dominance degrades STS performance.</td>
+</tr>
+<tr>
+<td>CORIA-TALN — <em>ACG Syntax-Semantics Interface</em> (Cousin)</td>
+<td>2025</td>
+<td><strong>Adjective modifiers</strong> (AdjP) and <strong>adverb modifiers</strong> (AdvP) encoded as higher-order functions in formal semantics. Grammatical categories constrain possible dependency structures. Verbs require NP subject + NP object; nouns can be modified by adjectives.</td>
+</tr>
+<tr>
+<td>INRIA — <em>Deep Sequoia Annotation Guide</em></td>
+<td>2025</td>
+<td>Canonical vs final grammatical functions. <strong>Explicit subject</strong> of infinitives and participles. French-specific: clitics, dislocations, diathesis changes (passive, impersonal).</td>
+</tr>
+</tbody>
+</table>
+<h3 id="korea-japan">Korea / Japan</h3>
+<table>
+<thead>
+<tr>
+<th>Source</th>
+<th>Venue</th>
+<th>Key Finding</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Yonsei Univ. — <em>Interpretability for Korean LMs</em> (Shin &amp; Jang)</td>
+<td>2026</td>
+<td>Agglutinative language: <strong>entity-internal cohesion</strong> in upper layers (8-11). <strong>Boundary alignment</strong> in middle layers (4-7) — post-entity particles (O-tags) serve as boundary cues. <strong>Long-distance dependencies</strong> in mid-to-upper (3-6, 9-11). Korean-specific linguistic organization at attention head level.</td>
+</tr>
+<tr>
+<td>SKKU — <em>Unsupervised Detection of LLM Text in Korean</em></td>
+<td>Findings EACL 2026</td>
+<td><strong>Syntactic token cohesiveness</strong> (TOCSIN) + <strong>semantic regeneration similarity</strong> (SimLLM). Korean morphological complexity requires adaptation. Ensemble achieves 0.963 F1.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="multilingual-llm-sources">Multilingual LLM Sources</h3>
+<table>
+<thead>
+<tr>
+<th>Source</th>
+<th>Venue</th>
+<th>Key Finding</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>AAAI — <em>Focusing on Language</em> (Liu et al.)</td>
+<td>2026</td>
+<td><strong>Language-specific</strong> AND <strong>language-general</strong> attention heads exist. LAHIS: single forward+backward pass identifies heads for multilingual capability. Language-specific heads enable cross-lingual attention transfer. 20 tunable parameters suffice for improvement.</td>
+</tr>
+<tr>
+<td>NeurIPS / arXiv — <em>Do Multilingual LLMs have specialized language heads?</em> (Naufil)</td>
+<td>2026</td>
+<td>Four head types: <strong>English-specific</strong>, <strong>Hindi-specific</strong>, <strong>language-agnostic</strong>, <strong>miscellaneous</strong>. Pruning language-specific heads for unwanted languages possible without degrading performance in target languages.</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="regional-consensus">Regional Consensus</h2>
+<table>
+<thead>
+<tr>
+<th>Region</th>
+<th>Highest-weight category</th>
+<th>Evidence</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>China</td>
+<td><strong>Full-attention layers for long-distance retrieval</strong></td>
+<td>Retrieval heads only develop in attention layers; efficient attention layers contribute &lt;1/5 of long-distance info.</td>
+</tr>
+<tr>
+<td>Germany</td>
+<td><strong>Subject-verb and determiner-noun in lower layers</strong></td>
+<td>Lower layers = local syntactic dependencies; upper = semantic abstraction. Query/Key separation proves syntax≠semantics mechanism.</td>
+</tr>
+<tr>
+<td>France</td>
+<td><strong>Verb predicates + adjectival modifiers</strong></td>
+<td>Formal semantic modeling shows verbs with mandatory NP arguments; adjectives as higher-order modifiers. Grammatical category constrains attention patterns.</td>
+</tr>
+<tr>
+<td>Korea</td>
+<td><strong>Entity boundaries via particle attention</strong></td>
+<td>Korean post-positional particles serve as boundary cues in middle layers (4-7). Noun-phrase internal cohesion in upper layers (8-11).</td>
+</tr>
+<tr>
+<td>Multilingual</td>
+<td><strong>Language-specific AND language-general heads coexist</strong></td>
+<td>Heads can be specialized for specific languages, not just syntactic categories.</td>
+</tr>
+</tbody>
+</table>
+<p>All 2026 sources report consistent finding: LLMs weight syntax more than semantics in hidden representations.</p>
+<table>
+<thead>
+<tr>
+<th>Measure</th>
+<th>Syntax</th>
+<th>Semantics</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Layer stability</td>
+<td>Stable across all layers</td>
+<td>Peaks in central layers</td>
+</tr>
+<tr>
+<td>Removal effect</td>
+<td>Removing syntax <strong>harms</strong> semantics</td>
+<td>Removing semantics <strong>preserves</strong> syntax</td>
+</tr>
+<tr>
+<td>Representational similarity</td>
+<td>Dominates</td>
+<td>Weaker</td>
+</tr>
+<tr>
+<td>Emergence</td>
+<td>Early (layers 2-7)</td>
+<td>Gradual (middle layers)</td>
+</tr>
+<tr>
+<td>Dedicated circuits</td>
+<td>Subject-verb, filler-gap, agreement</td>
+<td>Predicate-argument (more diffuse)</td>
+</tr>
+<tr>
+<td>Cross-construction sharing</td>
+<td>High (shared agreement circuits)</td>
+<td>Lower (construction-specific NPI)</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Paradox</strong>: Humans weight thematic roles (who-did-what-to-whom) &gt; syntax. LLMs reverse :: syntax dominates hidden representations; attention heads extract semantic roles on demand.</p>
+<hr />
+<h2 id="bottom-line">Bottom Line</h2>
+<p><strong>Highest internal weight:</strong><br />
+1. <strong>Subject-verb agreement</strong> — shared circuits, 40-86% unit overlap<br />
+2. <strong>Nouns/entities</strong> — emerge layer 1, semantic role carrier<br />
+3. <strong>Function words</strong> — specialized heads, layers 3-4  </p>
+<p><strong>Lowest internal weight:</strong><br />
+9. <strong>Inflectional features</strong> — steerable, weakly attention-encoded<br />
+10. <strong>Gerunds / non-finite verbals</strong> — no dedicated circuits, existing NOUN+VERB path processing  </p>
+<p>Model weights subject→verb relation, not abstract-action-as-noun (gerund). Syntax dominates. Syntax removal harms semantics; semantics removal preserves syntax (ICML 2026). LLMs reverse human priority. Humans weight thematic roles &gt; syntax. LLMs weight syntax first in hidden representations; attention heads extract semantic roles on demand.</p>
+<p><strong>Full source list</strong>: 35 sources, 15 venues, 6 regions. ACL 2026 (7), Findings ACL 2026 (4), CoNLL 2026 (4), ICML 2026 (1), AAAI 2026 (1), SCiL 2026 (1), StarSem 2026 (1), COLING 2025 (1), TACL 2024 (1), LREC 2024 (1), Findings NAACL 2025 (1), CORIA-TALN 2025 (2), Findings EACL 2026 (1). Plus Chinese journals (3), German tech pubs (4), French formal linguistics (1), Korean academic (2), NeurIPS (1).</p>
+<hr />
+<h2 id="lambda-calculus-connection">Lambda Calculus Connection</h2>
+<p>Architecture maps directly to lambda calculus — computation's theoretical foundation:</p>
+<table>
+<thead>
+<tr>
+<th>Lambda calculus concept</th>
+<th>LLM circuit equivalent</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Variable binding</strong> (λx. M)</td>
+<td>Filler-gap heads (7.5, 7.6, 9.2) — track what a variable refers to across distance</td>
+</tr>
+<tr>
+<td><strong>β-reduction</strong> (substitution)</td>
+<td>Attention-weighted value retrieval — substitute context into variable position</td>
+</tr>
+<tr>
+<td><strong>α-conversion</strong> (rename variables)</td>
+<td>Entity/NP tracking (layer 1+) — identity persists across surface form changes</td>
+</tr>
+<tr>
+<td><strong>Application</strong> (M N)</td>
+<td>Subject-verb agreement circuits (40-86% overlap) — function applied to argument</td>
+</tr>
+<tr>
+<td><strong>Abstraction</strong> (λx.)</td>
+<td>Determiner-noun binding (68.91% overlap) — binder to bound variable</td>
+</tr>
+<tr>
+<td><strong>Church-Rosser</strong> (confluence)</td>
+<td>ICML 2026 asymmetry — syntax reduction converges regardless of semantic path</td>
+</tr>
+<tr>
+<td><strong>SKI combinators</strong> (minimal syntax)</td>
+<td>MoE POS-specialized experts — minimal dedicated circuits for each category</td>
+</tr>
+<tr>
+<td><strong>Curry-Howard</strong> (types as propositions)</td>
+<td>Definitional Semantic Role Analysis (CoNLL 2026) — semantic roles as type judgments</td>
+</tr>
+</tbody>
+</table>
+<p>LLMs approximate differentiable, probabilistic lambda calculus. Transformer.attention computes soft, weighted β-reduction. Model substitutes weighted mixture of all possible values, not single term for variable. Query-Key-Value separation mirrors lambda calculus distinctions :: Query = functional context (computation target), Key = binder (lookup target), Value = bound term (substitution target).</p>
+<p>Single architecture generates natural language → code. Both :: syntactic systems ~ lambda-calculus computation. Code :: lambda calculus + rigid typing (Curry-Howard). Natural language :: lambda calculus + probabilistic, context-dependent typing.</p>
+<p>ICML 2026 asymmetry — syntax removal harms semantics, not vice versa — corresponds to Church-Rosser property: β-reduction converges to unique normal form, reduction order regardless. Semantics = syntax result, not driver.</p>
+<h2 id="why-this-explains-code-generation">Why This Explains Code Generation</h2>
+<p>Syntax dominance in LLM internals — shared agreement circuits, filler-gap tracking, NP entity detection — maps directly to code:</p>
+<table>
+<thead>
+<tr>
+<th>NL syntax circuit</th>
+<th>Code equivalent</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Subject-verb agreement (shared heads, 40-86% overlap)</td>
+<td>Variable-function binding; argument matching</td>
+</tr>
+<tr>
+<td>Filler-gap dependencies (heads 7.5, 7.6, 9.2)</td>
+<td>Long-distance dataflow; return values; closure variables</td>
+</tr>
+<tr>
+<td>Determiner-noun agreement (68.91% overlap, highest)</td>
+<td>Type-variable declarations; <code>const</code>/<code>let</code>/<code>var</code> binding</td>
+</tr>
+<tr>
+<td>Entity/NP tracking (emerges layer 1, particle boundaries L4-7)</td>
+<td>Identifier resolution; scope chains</td>
+</tr>
+<tr>
+<td>Animacy circuits (22 heads mediating passive/promoting)</td>
+<td>Argument role detection; subject/object in function calls</td>
+</tr>
+</tbody>
+</table>
+<p>Code :: pure syntax + strict structural rules — exact domain for LLM specialization. Subject-verb agreement circuits (shared across all 7 tested models) reuse directly for variable-function binding tracking. Filler-gap dependency heads (7.5, 7.6, 9.2) handle long-distance dependencies: return value propagation across function boundaries.</p>
+<p>LLMs treat code same as language: syntax-first, semantics layered on top. ICML 2026 finding (syntax removal &gt;&gt; semantics harm; semantics removal preserves syntax) explains syntax-perfect, semantics-wrong code generation. Syntax circuits :: robust, primary. Semantic verification :: secondary.</p></body></html>

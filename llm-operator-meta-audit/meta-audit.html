@@ -1,0 +1,955 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>llm-operator-meta-audit — meta audit</title><meta name="description" content="meta audit"><meta name="robots" content="index, follow"><link rel="canonical" href="https://7not-nico.github.io/llm-investigations/llm-operator-meta-audit/meta-audit.html"><style>body{font-family:system-ui,sans-serif;max-width:760px;margin:2rem auto;padding:0 1rem;line-height:1.6;color:#222}
+h1{font-size:1.5rem}h2{font-size:1.2rem;margin-top:1.8rem}h3{font-size:1.05rem}
+a{color:#0969da;text-decoration:none}a:hover{text-decoration:underline}
+code,pre{background:#f6f8fa;border-radius:4px}pre{padding:.6rem;overflow-x:auto}
+table{border-collapse:collapse;width:100%}th,td{border:1px solid #ddd;padding:.3rem .5rem;font-size:.9rem}
+nav{background:#f6f8fa;border:1px solid #ddd;border-radius:6px;padding:.5rem .8rem;margin-bottom:1.5rem}
+nav a{margin-right:.6rem;white-space:nowrap}.foot{margin-top:2rem;color:#666;font-size:.85rem}
+</style></head><body><nav>
+<a href="../">home</a>
+<a href="../llm-item-omission/">item-omission</a>
+<a href="../llm-operator-meta-audit/">operator-meta-audit</a>
+<a href="../llm-semantic-weight/">semantic-weight</a>
+<a href="../llm-specification-gotcha-contraction/">specification-gotcha</a>
+</nav><h1>meta audit</h1><hr />
+<p>id: INV.LLM.OPERATOR
+title: Logical Operators vs Semantic Phrasing in LLM Instructions
+summary: Cross-region investigation into whether writing instructions with logical operators (&amp;&amp;, ||, XOR, ∩, ⇒, ∈, NOT) instead of declarative semantic phrasing is problematic for LLM instruction following. 189 searches across 13+ regions, 50+ papers from ACL/EMNLP/EACL/AAAI/ICML/ICLR/SemEval 2025-2026. Operator-by-operator evidence, mechanistic analysis, cross-lingual variation, and failure mode taxonomy.
+tags: [llm, prompt-engineering, logical-operators, semantic, constraint, specification, instruction-following, cross-lingual]
+tables: [regions, sources, researchers, meta_analyses, gaps, fundamentals, operators, failure_modes]</p>
+<hr />
+<p><strong>Core question</strong>: Logical operators (<code>&amp;&amp;</code>, <code>||</code>, <code>XOR</code>, <code>∩</code>, <code>⇒</code>, <code>∈</code>, <code>!</code>, <code>¬</code>) — precision tool or reliability hazard — for LLM instructions, compared declarative semantic phrasing?</p>
+<p><strong>Answer: Reliability hazard, disguise-tool.</strong> Operators save tokens 62–81%. They introduce model-specific, architecture-dependent, language-sensitive failure modes. Semantic phrasing avoids these entirely. Operator fidelity varies across model families &gt; any other instruction format variable. Instruction-tuning degrades operator comprehension in mid-sized models. Semantic phrasing ('X: required', 'apply all constraints') = only reliably cross-lingual, cross-model register.</p>
+<hr />
+<h2 id="fundamentals">Fundamentals</h2>
+<h3 id="core-findings">Core findings</h3>
+<table>
+<thead>
+<tr>
+<th>Finding</th>
+<th>Evidence</th>
+<th>Confidence</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Simple NL is functional scaffolding, not noise</td>
+<td>Scaffolding or Obstacle (Ni, 2026): simple NL structures help attention capture operator relationships</td>
+<td>High</td>
+</tr>
+<tr>
+<td>Operator fidelity is model-specific, not universal</td>
+<td>MetaGlyph (van Gassen, 2026): ∩ fails 0-21% across ALL models</td>
+<td>High</td>
+</tr>
+<tr>
+<td>Instruction-tuning destroys operator comprehension</td>
+<td>MetaGlyph mid-sized IT models (7-12B): 0% fidelity vs base (3B): 33%</td>
+<td>High</td>
+</tr>
+<tr>
+<td>Operators &amp; semantics use different neural depths</td>
+<td>Rocchetti &amp; Ferrara (2026): structural in early layers, semantic in late — they compete</td>
+<td>High</td>
+</tr>
+<tr>
+<td>Imperative register fails cross-lingually</td>
+<td>Mason (2026): cooperative in English, competitive in Spanish. Declarative: -81% variance</td>
+<td>High</td>
+</tr>
+<tr>
+<td>Priming is dominant negation failure mode</td>
+<td>Semantic Gravity Wells (2026): 87.5% of failures — naming target activates it</td>
+<td>High</td>
+</tr>
+<tr>
+<td>XOR produces correct reasoning + wrong answers</td>
+<td>Rao et al. (2026): 100% of depth-7 errors have correct CoT but wrong declared answer</td>
+<td>High</td>
+</tr>
+<tr>
+<td>Connectives are high-entropy fragility points</td>
+<td>Park &amp; Lei (ACL 2026): 1 connective change derails 41% of correct chains</td>
+<td>High</td>
+</tr>
+<tr>
+<td>Models lack robust operator grounding</td>
+<td>Jiang et al. (ACL 2026): oscillate between structural reasoning and surface matching</td>
+<td>High</td>
+</tr>
+<tr>
+<td>Token reduction is the ONLY proven operator benefit</td>
+<td>Tang (2026): no significant CSR improvement (Cliff's δ &lt; 0.01)</td>
+<td>High</td>
+</tr>
+</tbody>
+</table>
+<h3 id="mechanism-underlying-operator-failures">Mechanism underlying operator failures</h3>
+<p>Logical operators require model context-switch between two processing modes, single forward pass:</p>
+<ol>
+<li><strong>Early layers</strong> (0–40%): parse operator syntax → structural constraint mode</li>
+<li><strong>Late layers</strong> (60–100%): process semantic meaning → semantic constraint mode</li>
+</ol>
+<p>Modes compete for representational resources. Operator addition degrades operator parsing + semantic compliance. This explains:</p>
+<p>∩ fails → models interpret ∩ as list punctuation, not conjunction
+NOT primes → naming forbidden word activates it in semantic space
+XOR dissociates → correct structural reasoning produces wrong semantic output
+Instruction-tuning hurts → IT optimizes NL fluency, overwrites operator circuits</p>
+<hr />
+<h2 id="regions-surveyed">Regions surveyed</h2>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>Region</th>
+<th>Languages</th>
+<th>Searches</th>
+<th>Relevant sources</th>
+<th>PASS/WARN/FAIL</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>Global/English</td>
+<td>EN</td>
+<td>12</td>
+<td>MetaGlyph, Novel Operator Test, Scaffolding Study, Semantic Gravity Wells, Correct Chains, Where Reasoning Breaks, Immediate Inference, Atomic Instruction Gap</td>
+<td>PASS</td>
+</tr>
+<tr>
+<td>2</td>
+<td>China</td>
+<td>ZH-CN</td>
+<td>8</td>
+<td>LsrIF, Chinese Negation Study, SoT, CLSR, JSONFOL, Logic-of-Thought</td>
+<td>PASS</td>
+</tr>
+<tr>
+<td>3</td>
+<td>Russia</td>
+<td>RU</td>
+<td>6</td>
+<td>Habr survey, Kryvolapov prompt guide, ISP RAS logic+LLM paper, LLightPro</td>
+<td>PASS</td>
+</tr>
+<tr>
+<td>4</td>
+<td>Japan</td>
+<td>JA</td>
+<td>6</td>
+<td>FLDx2 corpus, JSONFOL, JFLD benchmark, reverse reasoning study, pragmatics study</td>
+<td>PASS</td>
+</tr>
+<tr>
+<td>5</td>
+<td>Korea</td>
+<td>KO</td>
+<td>6</td>
+<td>REPAIR logical consistency, CSAT 2026 evaluation, reasoning model prompt guide, Korean math prompts</td>
+<td>PASS</td>
+</tr>
+<tr>
+<td>6</td>
+<td>France/Romance</td>
+<td>FR, ES, IT, PT</td>
+<td>6</td>
+<td>Cross-lingual activation steering, XReasoning, SemEval-2026 Task 11, Sketch-of-Thought</td>
+<td>PASS</td>
+</tr>
+<tr>
+<td>7</td>
+<td>Germany/Nordic</td>
+<td>DE, SV, DA, NO, FI</td>
+<td>5</td>
+<td>SLR-Bench multilingual, LogicSkills, Bielik-R, OneRuler, Letrum evaluations</td>
+<td>PASS</td>
+</tr>
+<tr>
+<td>8</td>
+<td>Poland/Central Europe</td>
+<td>PL, CS, HU</td>
+<td>4</td>
+<td>Bielik-R (Polish reasoning), propositional calculus 80%, FOL 89%, DAPO RL</td>
+<td>PASS</td>
+</tr>
+<tr>
+<td>9</td>
+<td>SE Asia</td>
+<td>TH, VI, ID, TL</td>
+<td>5</td>
+<td>Typhoon T1 (Thai reasoning), SeaLLMs, SEA-HELM benchmark</td>
+<td>PASS</td>
+</tr>
+<tr>
+<td>10</td>
+<td>Turkey</td>
+<td>TR</td>
+<td>4</td>
+<td>TÜDÜM (Turkish thinking), Turkish logit lens, Karga-2B-Thinking</td>
+<td>PASS</td>
+</tr>
+<tr>
+<td>11</td>
+<td>Iran</td>
+<td>FA</td>
+<td>3</td>
+<td>FarsInstruct, PARSE reasoning QA, mFollowIR</td>
+<td>PASS</td>
+</tr>
+<tr>
+<td>12</td>
+<td>Arabic</td>
+<td>AR</td>
+<td>3</td>
+<td>AraReasoner, SemEval-2026 Task 11 Arabic, multilingual prompt localization</td>
+<td>PASS</td>
+</tr>
+<tr>
+<td>13</td>
+<td>Africa</td>
+<td>SW, YO, HA</td>
+<td>3</td>
+<td>AfriXNLI prompting study, SemEval-2026 Task 11 Swahili</td>
+<td>PASS</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="operator-by-operator-evidence">Operator-by-operator evidence</h2>
+<h3 id="conjunction-and">Conjunction: ∩ / &amp;&amp; / AND</h3>
+<table>
+<thead>
+<tr>
+<th>Model</th>
+<th>Fidelity</th>
+<th>Task type</th>
+<th>Source</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>GPT-5.2 Chat</td>
+<td>21.4%</td>
+<td>Constraint composition</td>
+<td>MetaGlyph</td>
+</tr>
+<tr>
+<td>Gemini 2.5 Flash</td>
+<td>2.7%</td>
+<td>Constraint composition</td>
+<td>MetaGlyph</td>
+</tr>
+<tr>
+<td>Claude Haiku 4.5</td>
+<td>1.5%</td>
+<td>Constraint composition</td>
+<td>MetaGlyph</td>
+</tr>
+<tr>
+<td>Llama 3B</td>
+<td>0%</td>
+<td>Constraint composition</td>
+<td>MetaGlyph</td>
+</tr>
+<tr>
+<td>Qwen 7B</td>
+<td>0%</td>
+<td>Constraint composition</td>
+<td>MetaGlyph</td>
+</tr>
+<tr>
+<td>OLMo 7B</td>
+<td>0%</td>
+<td>Constraint composition</td>
+<td>MetaGlyph</td>
+</tr>
+<tr>
+<td>Gemma 12B</td>
+<td>0%</td>
+<td>Constraint composition</td>
+<td>MetaGlyph</td>
+</tr>
+<tr>
+<td>Kimi K2</td>
+<td>0%</td>
+<td>Constraint composition</td>
+<td>MetaGlyph</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Verdict: Use declarative listing for multi-constraint composition.</strong> Models interpret ∩ as list punctuation, not conjunction. Apply declarative listing: 'all constraints required', .satisfy X + Y.</p>
+<h3 id="implication">Implication: ⇒ / →</h3>
+<table>
+<thead>
+<tr>
+<th>Model</th>
+<th>Fidelity</th>
+<th>Task type</th>
+<th>Source</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Kimi K2</td>
+<td>98.1%</td>
+<td>Conditional logic</td>
+<td>MetaGlyph</td>
+</tr>
+<tr>
+<td>Gemini 2.5 Flash</td>
+<td>33.5%</td>
+<td>Conditional logic</td>
+<td>MetaGlyph</td>
+</tr>
+<tr>
+<td>GPT-5.2 Chat</td>
+<td>—</td>
+<td>Not tested</td>
+<td>MetaGlyph</td>
+</tr>
+<tr>
+<td>All others</td>
+<td>0%</td>
+<td>Conditional logic</td>
+<td>MetaGlyph</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Verdict: Model-specific.</strong> Kimi K2 passes. All other models fail. Validate on target model before use.</p>
+<h3 id="membership">Membership: ∈</h3>
+<table>
+<thead>
+<tr>
+<th>Model</th>
+<th>Fidelity</th>
+<th>Task type</th>
+<th>Source</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>GPT-5.2 Chat</td>
+<td>91.3%</td>
+<td>Selection</td>
+<td>MetaGlyph</td>
+</tr>
+<tr>
+<td>Gemini 2.5 Flash</td>
+<td>49.9%</td>
+<td>Selection</td>
+<td>MetaGlyph</td>
+</tr>
+<tr>
+<td>Kimi K2</td>
+<td>36.0%</td>
+<td>Selection</td>
+<td>MetaGlyph</td>
+</tr>
+<tr>
+<td>Llama 3B</td>
+<td>33.3%</td>
+<td>Selection</td>
+<td>MetaGlyph</td>
+</tr>
+<tr>
+<td>Claude Haiku 4.5</td>
+<td>26.0%</td>
+<td>Selection</td>
+<td>MetaGlyph</td>
+</tr>
+<tr>
+<td>Qwen 7B</td>
+<td>20.4%</td>
+<td>Selection</td>
+<td>MetaGlyph</td>
+</tr>
+<tr>
+<td>OLMo 7B</td>
+<td>0%</td>
+<td>Selection</td>
+<td>MetaGlyph</td>
+</tr>
+<tr>
+<td>Gemma 12B</td>
+<td>0%</td>
+<td>Selection</td>
+<td>MetaGlyph</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Verdict: Frontier-model only.</strong> GPT-5.2 achieves good fidelity. Mid-sized IT models score 0%. Use ∈ only for simple selection tasks.</p>
+<h3 id="negation-not">Negation: NOT / ! / ¬</h3>
+<table>
+<thead>
+<tr>
+<th>Finding</th>
+<th>Detail</th>
+<th>Source</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Priming rate</td>
+<td>87.5% of failures — naming forbidden word activates it</td>
+<td>Semantic Gravity Wells</td>
+</tr>
+<tr>
+<td>Suppression gap</td>
+<td>4.4× weaker in failures (-5.2pp) vs successes (-22.8pp)</td>
+<td>Semantic Gravity Wells</td>
+</tr>
+<tr>
+<td>Override mode</td>
+<td>12.5% of failures — late-layer FFN overwhelms suppression</td>
+<td>Semantic Gravity Wells</td>
+</tr>
+<tr>
+<td>Chinese negation</td>
+<td>Models adopt intuitionist/minimal negation over classical</td>
+<td>Li et al., AAAI 2026</td>
+</tr>
+<tr>
+<td>Construction mechanism</td>
+<td>Mid-layer attention builds ¬Y vector (not just suppresses Y)</td>
+<td>Zhou et al., ICML 2026</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Verdict: Worst operator choice.</strong> Priming = dominant failure mode. Use 'X: disabled' or 'X: excluded' — declarative register avoids target naming.</p>
+<h3 id="xor">XOR</h3>
+<table>
+<thead>
+<tr>
+<th>Finding</th>
+<th>Detail</th>
+<th>Source</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Reasoning-output dissociation</td>
+<td>100% of depth-7 errors: correct CoT, wrong answer</td>
+<td>Rao et al.</td>
+</tr>
+<tr>
+<td>Model confidence</td>
+<td>99.99% confident when wrong</td>
+<td>Rao et al.</td>
+</tr>
+<tr>
+<td>Minimum heads</td>
+<td>2 attention heads minimum to compute XOR</td>
+<td>LessWrong</td>
+</tr>
+<tr>
+<td>Trojan operator test</td>
+<td>XOR's truth table under novel name matches XOR — problem is logical, not lexical</td>
+<td>Rao et al.</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Verdict: Unreliable in all tested models.</strong> Use explicit enumeration for behavioral constraints.</p>
+<h3 id="logical-connectives-therefore-however-but-so">Logical connectives (therefore, however, but, so)</h3>
+<table>
+<thead>
+<tr>
+<th>Finding</th>
+<th>Detail</th>
+<th>Source</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Connective fragility</td>
+<td>41.1% of correct chains derailed by 1 connective change</td>
+<td>Park &amp; Lei</td>
+</tr>
+<tr>
+<td>Relative destructive power</td>
+<td>1.75× more destructive than non-connective perturbations</td>
+<td>Park &amp; Lei</td>
+</tr>
+<tr>
+<td>Token proportion</td>
+<td>4-7% of generated tokens</td>
+<td>Park &amp; Lei</td>
+</tr>
+<tr>
+<td>Repair mechanism</td>
+<td>Cross-category transitions drive repairs, not within-category swaps</td>
+<td>Park &amp; Lei</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Verdict: Connectives = single failure points in reasoning chains.</strong> Specify logical relations explicitly. Use explicit logical relations over model-chosen connectives.</p>
+<h3 id="pseudo-code-ifelse-switch">Pseudo-code (IF/ELSE, SWITCH)</h3>
+<table>
+<thead>
+<tr>
+<th>Finding</th>
+<th>Detail</th>
+<th>Source</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Accuracy gain</td>
+<td>+36% over NL</td>
+<td>Kryvolapov</td>
+</tr>
+<tr>
+<td>Token reduction</td>
+<td>-87%</td>
+<td>Kryvolapov</td>
+</tr>
+<tr>
+<td>Frontier consensus</td>
+<td>98% across 5 models</td>
+<td>SoftPrompt-IR</td>
+</tr>
+<tr>
+<td>Token reduction (SoftPrompt-IR)</td>
+<td>75-92%</td>
+<td>SoftPrompt-IR</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Verdict: Works on frontier models.</strong> Best operator-adjacent form. Use declarative pseudo-code (IF/ELSE) over raw symbolic notation.</p>
+<h3 id="steering-tokens-learned-operator-embeddings">Steering tokens (learned operator embeddings)</h3>
+<table>
+<thead>
+<tr>
+<th>Finding</th>
+<th>Detail</th>
+<th>Source</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Compositional accuracy</td>
+<td>62.9% vs 57.4% instructions-only</td>
+<td>ACL 2026 Steering Tokens</td>
+</tr>
+<tr>
+<td>Hybrid gain</td>
+<td>Tokens+NL beats either alone</td>
+<td>ACL 2026 Steering Tokens</td>
+</tr>
+<tr>
+<td>Cross-model</td>
+<td>Generalizes across 7 models, 5 families</td>
+<td>ACL 2026 Steering Tokens</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Verdict: Promising; requires training.</strong> Learned operators + NL = most effective composition strategy.</p>
+<hr />
+<h2 id="mechanistic-evidence">Mechanistic evidence</h2>
+<h3 id="neural-depth-stratification-rocchetti-ferrara-2026">Neural depth stratification (Rocchetti &amp; Ferrara 2026)</h3>
+<p>Nine instruction-following tasks across 3 models (Gemma, Llama, Qwen):</p>
+<ul>
+<li><strong>Early layers</strong> (&lt;40% depth): encode structural constraints — character count, JSON format, word count, term exclusion</li>
+<li><strong>Late layers</strong> (&gt;60%): encode semantic constraints — tone, style, topic, sentiment, register</li>
+<li><strong>No universal mechanism</strong>: task-specific specialist outperforms general probe trained across all tasks</li>
+<li><strong>Sparse dependencies</strong>: removing one constraint type leaves others unaffected → operators + semantics independent, resource-competition</li>
+<li><strong>Dynamic monitoring</strong>: constraint satisfaction emerges during generation, not pre-generation planning</li>
+</ul>
+<h3 id="two-phase-attention-processing-attend-first-consolidate-later">Two-phase attention processing (Attend First, Consolidate Later)</h3>
+<ul>
+<li>Bottom layers: gather information from previous tokens &gt;&gt; operator parsing</li>
+<li>Top layers: internal process = semantic consolidation</li>
+<li>Top 1/3: token swaps ignored → model commits to interpretation</li>
+<li>This explains XOR dissociation: early-layer structural parse produces correct result → late-layer semantic consolidation overwrites with wrong answer</li>
+</ul>
+<h3 id="propositional-logic-circuits-hong-et-al-2024-chen-et-al-2026">Propositional logic circuits (Hong et al. 2024; Chen et al. 2026)</h3>
+<ul>
+<li>4-stage circuit: rule locate → rule move → fact process → decision</li>
+<li>Middle layers process logical operators (AND/OR) via specialized logical-operator heads</li>
+<li>Stages = sequential + modular → interference at any stage cascades</li>
+</ul>
+<h3 id="negation-circuits-models-2026-zhou-et-al-icml-2026">Negation circuits (MODELS 2026; Zhou et al., ICML 2026)</h3>
+<blockquote>
+<p><strong>STATUS: first two bullets REFUTED.</strong> verdict and evidence:
+<code>granular-investigation/which-model-and-layer-processes-negation.md</code>
+— the matching paper (arXiv:2605.03052) tests Mistral-7B and Llama-3.1-8B, and
+reports that ablating the shortcut attention <em>improves</em> accuracy rather than
+collapsing representations. bullets 3–5 stand.</p>
+</blockquote>
+<ul>
+<li>~~Layer 10 :: Gemma-2-27B negation operator~~ <strong>REFUTED</strong></li>
+<li>~~Acts as causal trigger → ablating it collapses downstream representations ~40%~~ <strong>REFUTED</strong> (the source reports the opposite sign)</li>
+<li>Construction mechanism dominates: mid-layer attention builds ¬Y representation</li>
+<li>Suppression coexists, weaker</li>
+<li>Late-layer shortcut heads overwrite correct negation → sinking them recovers +17% accuracy</li>
+</ul>
+<hr />
+<h2 id="failure-mode-taxonomy">Failure mode taxonomy</h2>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>Failure mode</th>
+<th>Prevalence</th>
+<th>Mechanism</th>
+<th>Affected operators</th>
+<th>Mitigation</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>Priming</td>
+<td>87.5% of negation failures</td>
+<td>Instruction naming target activates rather than suppresses it</td>
+<td>NOT, !, ¬</td>
+<td>Declarative phrasing: "X: disabled"</td>
+</tr>
+<tr>
+<td>2</td>
+<td>Override</td>
+<td>12.5% of negation failures</td>
+<td>Late-layer FFN contributions (+0.39 vs +0.10) overwhelm suppression</td>
+<td>NOT, !, ¬</td>
+<td>Post-generation filtering</td>
+</tr>
+<tr>
+<td>3</td>
+<td>Reasoning-output dissociation</td>
+<td>100% at depth 7 for XOR</td>
+<td>Correct structural reasoning → wrong semantic output</td>
+<td>XOR, mixed operators</td>
+<td>Avoid XOR; use explicit enumeration</td>
+</tr>
+<tr>
+<td>4</td>
+<td>Semantic override</td>
+<td>Systematic</td>
+<td>Model reverts to pretrained operator defaults despite local redefinition</td>
+<td>All operators</td>
+<td>Out-of-prompt enforcement; formal verification</td>
+</tr>
+<tr>
+<td>5</td>
+<td>Connective fragility</td>
+<td>41.1% of correct chains</td>
+<td>Single token change at connective derails trajectory</td>
+<td>therefore, however, but</td>
+<td>Explicit logical relation specification</td>
+</tr>
+<tr>
+<td>6</td>
+<td>Atomic instruction gap</td>
+<td>30.44% accuracy drop</td>
+<td>Surface format drives behavior, not logical intent</td>
+<td>Symbolic labels (A/B vs 1/2)</td>
+<td>Instruction invariance training</td>
+</tr>
+<tr>
+<td>7</td>
+<td>Instruction-tuning degradation</td>
+<td>0% vs 33% fidelity</td>
+<td>IT optimizes for NL fluency, overwrites operator circuits</td>
+<td>All operators on 7-12B models</td>
+<td>Hybrid operator+NL; frontier models only</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="cross-lingual-variation">Cross-lingual variation</h2>
+<table>
+<thead>
+<tr>
+<th>Language family</th>
+<th>Operator behavior</th>
+<th>Source</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>English</td>
+<td>Imperatives cooperate (stacked = coherent authority)</td>
+<td>Mason 2026</td>
+</tr>
+<tr>
+<td>Spanish</td>
+<td>Imperatives compete (stacked = competing obligations)</td>
+<td>Mason 2026</td>
+</tr>
+<tr>
+<td>French</td>
+<td>Imperatives flatten (reduced interaction effects)</td>
+<td>Mason 2026</td>
+</tr>
+<tr>
+<td>Mandarin</td>
+<td>Imperatives partially preserve</td>
+<td>Mason 2026</td>
+</tr>
+<tr>
+<td>Polish</td>
+<td>Fusional morphology aids decoding (#1 in OneRuler long-context)</td>
+<td>OneRuler 2026</td>
+</tr>
+<tr>
+<td>Russian</td>
+<td>Fusional morphology assists but does not improve operator reasoning</td>
+<td>OneRuler 2026</td>
+</tr>
+<tr>
+<td>Thai</td>
+<td>Forced Thai reasoning degrades accuracy. Unconstrained &gt; English-forced &gt; Thai-forced</td>
+<td>Typhoon T1 2026</td>
+</tr>
+<tr>
+<td>Turkish</td>
+<td>English frame load-bearing for reasoning (P=0.67 → 0.12 with Turkish frame)</td>
+<td>Turkish logit lens 2026</td>
+</tr>
+<tr>
+<td>Japanese</td>
+<td>Reverse direction inference varies by word relatedness</td>
+<td>Nagata &amp; Ando 2026</td>
+</tr>
+<tr>
+<td>Chinese (ZH)</td>
+<td>Models adopt intuitionist negation, not classical</td>
+<td>Li et al., AAAI 2026</td>
+</tr>
+<tr>
+<td>Swahili</td>
+<td>Quantifier misinterpretation across languages is bottleneck, not logic</td>
+<td>ITLC SemEval-2026</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Universal pattern</strong>: English-pivot NL + declarative register = most reliable cross-lingual form. Operator notation parsing: inconsistent across languages, degrades in lower-resource languages.</p>
+<hr />
+<h2 id="mitigation-strategies">Mitigation strategies</h2>
+<table>
+<thead>
+<tr>
+<th>Strategy</th>
+<th>Effectiveness</th>
+<th>Complexity</th>
+<th>Evidence</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Declarative semantic register</td>
+<td>High — universal</td>
+<td>Low</td>
+<td>-81% cross-lingual variance (Mason)</td>
+</tr>
+<tr>
+<td>Hybrid: operators + NL</td>
+<td>High — best accuracy</td>
+<td>Low</td>
+<td>62.9% vs 57.4% (ACL Steering Tokens)</td>
+</tr>
+<tr>
+<td>Pseudo-code IF/ELSE</td>
+<td>High — frontier only</td>
+<td>Low</td>
+<td>+36% accuracy, -87% tokens (Kryvolapov)</td>
+</tr>
+<tr>
+<td>Structured-output enforcement</td>
+<td>High — deterministic</td>
+<td>Medium</td>
+<td>Preferred over prose (PROT.LLM.SPECIFICATION)</td>
+</tr>
+<tr>
+<td>FOL parser + theorem prover</td>
+<td>High — 95% across 12 langs</td>
+<td>High</td>
+<td>SemEval-2026 Task 11</td>
+</tr>
+<tr>
+<td>Logic-structured RL training</td>
+<td>High — transfers to reasoning</td>
+<td>Very High</td>
+<td>LsrIF: +10.6 arithmetic, +2.7 logic</td>
+</tr>
+<tr>
+<td>Implicit reasoning graphs</td>
+<td>High — complex instructions</td>
+<td>High</td>
+<td>ImpRIF: SOTA at 32B scale</td>
+</tr>
+<tr>
+<td>Activation steering</td>
+<td>Medium — +11pp</td>
+<td>Medium</td>
+<td>Logical subspace steering (Fang 2026)</td>
+</tr>
+<tr>
+<td>Steering tokens (trained)</td>
+<td>High — 62.9% compositional</td>
+<td>High</td>
+<td>ACL 2026 — requires training</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="gaps">Gaps</h2>
+<table>
+<thead>
+<tr>
+<th>Gap</th>
+<th>Severity</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>No standardized operator fidelity benchmark</td>
+<td>High</td>
+<td>Can't compare across studies. Each uses different tasks, models, metrics</td>
+</tr>
+<tr>
+<td>Unknown operator scaling beyond 1T</td>
+<td>Medium</td>
+<td>All fidelity data stops at ~1T parameters. Does operator comprehension continue improving?</td>
+</tr>
+<tr>
+<td>Limited low-resource language coverage</td>
+<td>High</td>
+<td>Only 1-2 papers per low-resource language. Many language families untested</td>
+</tr>
+<tr>
+<td>Operator interaction effects</td>
+<td>Medium</td>
+<td>How do multiple operators compose? Current data only tests one operator at a time</td>
+</tr>
+<tr>
+<td>Training dynamics of operator circuits</td>
+<td>Medium</td>
+<td>When during pretraining do operator circuits emerge? When does instruction-tuning overwrite them?</td>
+</tr>
+<tr>
+<td>Counterfactual operator reasoning</td>
+<td>Low</td>
+<td>Do models understand operator semantics or just pattern-match from training data?</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="key-researchers-by-region">Key researchers by region</h2>
+<table>
+<thead>
+<tr>
+<th>Researcher</th>
+<th>Region</th>
+<th>Institution</th>
+<th>Focus</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Ernst van Gassen</td>
+<td>Global</td>
+<td>—</td>
+<td>Symbolic metalanguages, prompt compression</td>
+</tr>
+<tr>
+<td>Abinav Rao</td>
+<td>Global</td>
+<td>—</td>
+<td>Boolean operator reasoning-output dissociation</td>
+</tr>
+<tr>
+<td>Ziang Ni</td>
+<td>Global</td>
+<td>—</td>
+<td>Scaffolding role of NL in transformer logic</td>
+</tr>
+<tr>
+<td>Seunghyun Park</td>
+<td>Global/Korea</td>
+<td>Independent</td>
+<td>Logical connective fragility</td>
+</tr>
+<tr>
+<td>Yuanyuan Lei</td>
+<td>Global</td>
+<td>U. Florida</td>
+<td>Logical subspace steering, connective fragility</td>
+</tr>
+<tr>
+<td>Elisabetta Rocchetti</td>
+<td>EU</td>
+<td>—</td>
+<td>Mechanistic understanding of instruction following</td>
+</tr>
+<tr>
+<td>Alfio Ferrara</td>
+<td>EU</td>
+<td>—</td>
+<td>Constraint satisfaction mechanisms</td>
+</tr>
+<tr>
+<td>Qingyu Ren</td>
+<td>China</td>
+<td>—</td>
+<td>Logic-structured RL for instruction following</td>
+</tr>
+<tr>
+<td>Shou-Tzu Han</td>
+<td>Global</td>
+<td>—</td>
+<td>Fragile reasoning under meaning-preserving perturbations</td>
+</tr>
+<tr>
+<td>Lechen Zhang</td>
+<td>Global</td>
+<td>—</td>
+<td>Cross-lingual prompt steerability</td>
+</tr>
+<tr>
+<td>Tony Mason</td>
+<td>Global</td>
+<td>—</td>
+<td>Imperative interference, social register</td>
+</tr>
+<tr>
+<td>Francis Frydman</td>
+<td>France</td>
+<td>Independent</td>
+<td>eXa-LM CNL-FOL bridge</td>
+</tr>
+<tr>
+<td>Adam Trybus</td>
+<td>Poland</td>
+<td>—</td>
+<td>Bielik-R Polish reasoning model</td>
+</tr>
+<tr>
+<td>Terufumi Morishita</td>
+<td>Japan</td>
+<td>Hitachi</td>
+<td>FLDx2 logic corpus, JFLD benchmark</td>
+</tr>
+<tr>
+<td>Zhejian Zhou</td>
+<td>Global</td>
+<td>—</td>
+<td>How language models process negation</td>
+</tr>
+<tr>
+<td>Giovanni Pio Delvecchio</td>
+<td>EU</td>
+<td>—</td>
+<td>Neuro-symbolic AI task-directed survey</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="see-also">See also</h2>
+<ul>
+<li><code>PROT.LLM.SPECIFICATION</code> — LLM Specification pattern with operator sub-rules</li>
+<li><code>COG.LOGICAL.OPERATOR.LLM</code> — Term definition for logical operator concept</li>
+<li><code>RUL.PSEUDO.CODE</code> — Pseudo-code notation convention</li>
+<li><code>INV.LLM.SPEC.CONTRACT</code> — Gotcha vs Contraction meta-audit</li>
+</ul><p class="foot">Source: <a href="https://github.com/7not-nico/llm-investigations/blob/main/llm-operator-meta-audit/meta-audit.md">repo</a></p></body></html>

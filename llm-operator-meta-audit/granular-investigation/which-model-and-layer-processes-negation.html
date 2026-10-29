@@ -1,0 +1,112 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>llm-operator-meta-audit — Which model and layer processes negation?</title><meta name="description" content="Which model and layer processes negation?"><meta name="robots" content="index, follow"><link rel="canonical" href="https://7not-nico.github.io/llm-investigations/llm-operator-meta-audit/granular-investigation/which-model-and-layer-processes-negation.html"><style>body{font-family:system-ui,sans-serif;max-width:760px;margin:2rem auto;padding:0 1rem;line-height:1.6;color:#222}
+h1{font-size:1.5rem}h2{font-size:1.2rem;margin-top:1.8rem}h3{font-size:1.05rem}
+a{color:#0969da;text-decoration:none}a:hover{text-decoration:underline}
+code,pre{background:#f6f8fa;border-radius:4px}pre{padding:.6rem;overflow-x:auto}
+table{border-collapse:collapse;width:100%}th,td{border:1px solid #ddd;padding:.3rem .5rem;font-size:.9rem}
+nav{background:#f6f8fa;border:1px solid #ddd;border-radius:6px;padding:.5rem .8rem;margin-bottom:1.5rem}
+nav a{margin-right:.6rem;white-space:nowrap}.foot{margin-top:2rem;color:#666;font-size:.85rem}
+</style></head><body><nav>
+<a href="../">home</a>
+<a href="../llm-item-omission/">item-omission</a>
+<a href="../llm-operator-meta-audit/">operator-meta-audit</a>
+<a href="../llm-semantic-weight/">semantic-weight</a>
+<a href="../llm-specification-gotcha-contraction/">specification-gotcha</a>
+</nav><h1>Which model and layer processes negation?</h1><h1 id="which-model-and-layer-processes-negation">Which model and layer processes negation?</h1>
+<p><strong>Concern:</strong> <code>../meta-audit.md</code> lines 190–196 state "Layer 10 :: Gemma-2-27B negation
+operator", with ablation collapsing downstream representations ~40%, attributed to
+"Zhou et al., ICML 2026". Does a paper support that row?</p>
+<p><strong>Status: NO. Every element of the row is unattributable as written. The matching
+paper tests different models, and neither the layer number nor the percentage is in
+it.</strong></p>
+<h2 id="the-row-verbatim-from-the-audit">the row, verbatim from the audit</h2>
+<pre><code>- Layer 10 :: Gemma-2-27B negation operator
+- Acts as causal trigger → ablating it collapses downstream representations ~40%
+- Construction mechanism dominates: mid-layer attention builds ¬Y representation
+- Suppression coexists, weaker
+- Late-layer shortcut h...
+</code></pre>
+<p>The third and fourth bullets match a real paper. The first, second and model name do
+not.</p>
+<h2 id="what-the-matching-paper-is">what the matching paper is</h2>
+<p><code>arXiv:2605.03052</code> — <em>How Language Models Process Negation</em>, Zhou, Zhejian; Zhou,
+Tianyi; Jia, Robin; May, Jonathan, 2026-05-04, rev. 2026-05-29, cs.CL. PDF in
+<code>../raw/</code>. Verified by curl against the arXiv <code>citation_author</code> and <code>citation_abstract</code>
+meta tags.</p>
+<p>Its abstract states:</p>
+<blockquote>
+<p>We apply a range of observational and causal interpretability techniques on
+<strong>Mistral-7B and Llama-3.1-8B</strong> to show that models implement both mechanisms, with
+the "constructive" mechanism being more prominent.</p>
+</blockquote>
+<p>And, on the failure side:</p>
+<blockquote>
+<p>Their poor accuracy is due to <strong>late-layer attention behavior that promotes simple
+shortcuts</strong>; ablating those attention modules greatly improves accuracy.</p>
+</blockquote>
+<h2 id="element-by-element">element by element</h2>
+<table>
+<thead>
+<tr>
+<th>audit's row</th>
+<th>paper</th>
+<th>verdict</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>construction mechanism dominates</td>
+<td>"construction being more prominent"</td>
+<td><strong>supported</strong></td>
+</tr>
+<tr>
+<td>suppression coexists, weaker</td>
+<td>both mechanisms, construction more prominent</td>
+<td><strong>supported</strong></td>
+</tr>
+<tr>
+<td>late-layer shortcut</td>
+<td>late-layer attention promotes shortcuts</td>
+<td><strong>supported</strong></td>
+</tr>
+<tr>
+<td>Gemma-2-27B</td>
+<td>Mistral-7B, Llama-3.1-8B</td>
+<td><strong>refuted</strong></td>
+</tr>
+<tr>
+<td>Layer 10</td>
+<td>not in abstract</td>
+<td><strong>unattributed</strong></td>
+</tr>
+<tr>
+<td>~40% collapse on ablation</td>
+<td>not in abstract; the paper reports <em>improved accuracy</em></td>
+<td><strong>unattributed, and stated as the wrong kind of quantity</strong></td>
+</tr>
+</tbody>
+</table>
+<h2 id="the-compound-error">the compound error</h2>
+<p>Three separate faults stacked in one row:</p>
+<ol>
+<li>a <strong>different model family</strong> named than the one measured</li>
+<li>a <strong>layer number</strong> with no source</li>
+<li>a <strong>percentage of representation collapse</strong> substituted for the paper's actual
+   finding, which is an <em>accuracy improvement</em> after ablation</li>
+</ol>
+<p>Fault 3 is the one worth dwelling on. "Collapses downstream representations ~40%" and
+"greatly improves accuracy" are opposite-signed claims about what ablation does.
+The first says the circuit is load-bearing; the second says removing a shortcut
+helps. A row that inverts the sign of its source is not a citation error that a
+reader can catch by checking the venue.</p>
+<h2 id="what-to-do">what to do</h2>
+<p>Either locate a Gemma-2-27B paper and cite it for the layer-10/40% row, or rewrite
+the row to the Mistral/Llama result: construction-dominant negation in mid-layer
+attention, with late-layer shortcut attention causing the errors. The second is
+supported and the audit's argument survives on it — the audit's mechanism section
+does not need Gemma or layer 10.</p>
+<h2 id="related">related</h2>
+<ul>
+<li><code>../raw/operator-fidelity-papers.md</code> — full source table for this audit</li>
+<li><code>../../llm-specification-gotcha-contraction/granular-investigation/do-middle-and-early-layers-disagree-about-negation.md</code>
+  — why layer numbers cannot be quoted without their model family</li>
+</ul><p class="foot">Source: <a href="https://github.com/7not-nico/llm-investigations/blob/main/llm-operator-meta-audit/granular-investigation/which-model-and-layer-processes-negation.md">repo</a></p></body></html>

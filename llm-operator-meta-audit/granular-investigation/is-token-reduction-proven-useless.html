@@ -1,0 +1,55 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>llm-operator-meta-audit — Is token reduction proven useless, and is the cited source about operators?</title><meta name="description" content="Is token reduction proven useless, and is the cited source about operators?"><meta name="robots" content="index, follow"><link rel="canonical" href="https://7not-nico.github.io/llm-investigations/llm-operator-meta-audit/granular-investigation/is-token-reduction-proven-useless.html"><style>body{font-family:system-ui,sans-serif;max-width:760px;margin:2rem auto;padding:0 1rem;line-height:1.6;color:#222}
+h1{font-size:1.5rem}h2{font-size:1.2rem;margin-top:1.8rem}h3{font-size:1.05rem}
+a{color:#0969da;text-decoration:none}a:hover{text-decoration:underline}
+code,pre{background:#f6f8fa;border-radius:4px}pre{padding:.6rem;overflow-x:auto}
+table{border-collapse:collapse;width:100%}th,td{border:1px solid #ddd;padding:.3rem .5rem;font-size:.9rem}
+nav{background:#f6f8fa;border:1px solid #ddd;border-radius:6px;padding:.5rem .8rem;margin-bottom:1.5rem}
+nav a{margin-right:.6rem;white-space:nowrap}.foot{margin-top:2rem;color:#666;font-size:.85rem}
+</style></head><body><nav>
+<a href="../">home</a>
+<a href="../llm-item-omission/">item-omission</a>
+<a href="../llm-operator-meta-audit/">operator-meta-audit</a>
+<a href="../llm-semantic-weight/">semantic-weight</a>
+<a href="../llm-specification-gotcha-contraction/">specification-gotcha</a>
+</nav><h1>Is token reduction proven useless, and is the cited source about operators?</h1><h1 id="is-token-reduction-proven-useless-and-is-the-cited-source-about-operators">Is token reduction proven useless, and is the cited source about operators?</h1>
+<p><strong>Concern:</strong> the audit's fundamentals table states "Token reduction is the ONLY proven
+operator benefit", citing Tang (2026) for Cliff's δ &lt; 0.01. Does that paper measure
+operators?</p>
+<p><strong>Status: NO. The paper measures constraint headers in code generation. The
+conclusion happens to be independently supported — by a paper the audit cites for
+something else.</strong></p>
+<h2 id="the-cited-source">the cited source</h2>
+<p><code>arXiv:2604.07192</code> — <em>Compact Constraint Encoding for LLM Code Generation: An
+Empirical Study of Token Economics and Constraint Compliance</em>, Tang, Hanzhang (single
+author), 2026-04-08. PDF in <code>../raw/</code>. Verified by curl against arXiv meta tags.</p>
+<p>The abstract's finding, as reported: no significant constraint-satisfaction-rate
+differences, <strong>Cliff's δ &lt; 0.01</strong>. So compressing the encoding buys tokens and no
+compliance.</p>
+<h2 id="what-it-actually-studies">what it actually studies</h2>
+<p><strong>Constraint headers for code generation.</strong> Not logical operators. The subjects are
+instruction-formatting constructs in a code-gen setting — a different domain, a
+different task, and a different kind of constraint from <code>&amp;&amp;</code>, <code>∧</code>, <code>⇒</code>.</p>
+<p>So the audit attaches an operator-level verdict to a constraint-encoding measurement.
+The word "operator" is doing work the paper does not do.</p>
+<h2 id="the-conclusion-still-stands-from-a-different-citation">the conclusion still stands, from a different citation</h2>
+<p><code>arXiv:2601.07354</code> (MetaGlyph, van Gassen) measures operators directly and reports
+<strong>62–81% token reduction across all task types</strong> with fidelity unchanged — operators
+that do not work at 0% fidelity stay at 0% fidelity after 81% fewer tokens. That is
+the same non-effect, measured on the right subject.</p>
+<p>So the audit's claim is true and its citation is wrong. Worth separating those,
+because the claim is used as the audit's "only proven benefit" counterweight and a
+future reader checking Tang will find a code-generation paper and reasonably lose
+trust in the row.</p>
+<h2 id="a-sharper-reading-if-the-audit-wants-one">a sharper reading, if the audit wants one</h2>
+<p>MetaGlyph's own numbers support a slightly different and more useful statement than
+"token reduction buys nothing": <strong>there is no size threshold where symbolic
+compression starts paying.</strong> The 62–81% reduction is uniform across task types, and
+fidelity is model-determined, not token-determined. Compression is a cost saving with
+a fidelity risk, never a fidelity gain — which is what the audit concludes, arrived
+at more weakly than the evidence allows.</p>
+<h2 id="related">related</h2>
+<ul>
+<li><code>is-instruction-tuning-a-monotone-harm.md</code> — the U-shape that makes operator
+  fidelity model-specific</li>
+<li><code>../raw/operator-fidelity-papers.md</code> — full source table for this audit</li>
+</ul><p class="foot">Source: <a href="https://github.com/7not-nico/llm-investigations/blob/main/llm-operator-meta-audit/granular-investigation/is-token-reduction-proven-useless.md">repo</a></p></body></html>

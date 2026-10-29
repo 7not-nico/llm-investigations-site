@@ -1,0 +1,70 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>llm-semantic-weight — Do determiners recruit the most shared units?</title><meta name="description" content="Do determiners recruit the most shared units?"><meta name="robots" content="index, follow"><link rel="canonical" href="https://7not-nico.github.io/llm-investigations/llm-semantic-weight/granular-investigation/do-determiners-recruit-the-most-shared-units.html"><style>body{font-family:system-ui,sans-serif;max-width:760px;margin:2rem auto;padding:0 1rem;line-height:1.6;color:#222}
+h1{font-size:1.5rem}h2{font-size:1.2rem;margin-top:1.8rem}h3{font-size:1.05rem}
+a{color:#0969da;text-decoration:none}a:hover{text-decoration:underline}
+code,pre{background:#f6f8fa;border-radius:4px}pre{padding:.6rem;overflow-x:auto}
+table{border-collapse:collapse;width:100%}th,td{border:1px solid #ddd;padding:.3rem .5rem;font-size:.9rem}
+nav{background:#f6f8fa;border:1px solid #ddd;border-radius:6px;padding:.5rem .8rem;margin-bottom:1.5rem}
+nav a{margin-right:.6rem;white-space:nowrap}.foot{margin-top:2rem;color:#666;font-size:.85rem}
+</style></head><body><nav>
+<a href="../">home</a>
+<a href="../llm-item-omission/">item-omission</a>
+<a href="../llm-operator-meta-audit/">operator-meta-audit</a>
+<a href="../llm-semantic-weight/">semantic-weight</a>
+<a href="../llm-specification-gotcha-contraction/">specification-gotcha</a>
+</nav><h1>Do determiners recruit the most shared units?</h1><h1 id="do-determiners-recruit-the-most-shared-units">Do determiners recruit the most shared units?</h1>
+<p><strong>Concern:</strong> the audit's tier-1 argument leans on determiner-noun agreement's 68.91%
+overlap — the highest of the three agreement types — to conclude that determiners are
+strongly represented, which bears on why a clause-initial <code>no X</code> escapes a
+function-word detector. Does the number support that?</p>
+<p><strong>Status: the number is real and correctly quoted. It measures a different quantity
+than the argument needs, so the inference is a hypothesis, not a result.</strong></p>
+<h2 id="the-source">the source</h2>
+<p><code>arXiv:2512.03676</code> — <em>Different types of syntactic agreement recruit the same units
+within large language models</em>, Kryvosheieva, Daria; de Varda, Andrea; Fedorenko,
+Evelina; Tuckute, Greta. v1 2025-12-03, rev. 2026-04-11, cs.CL. PDF in <code>../raw/</code>.
+Full text read with <code>pdftotext</code>; the passage below is from the Results.</p>
+<h2 id="what-the-paper-says-verbatim">what the paper says, verbatim</h2>
+<blockquote>
+<p>The results are shown in Figure 4: across most phenomena, the within-category
+overlaps are reliably higher than the cross-category overlaps (t = 2.07, p = 0.0312
+via a two-sample Welch t-test). Interestingly, this pattern appears to be driven by
+the three agreement categories: determiner-noun agreement, subject-verb agreement,
+and anaphor agreement (average <strong>within-category</strong> overlaps: <strong>68.91%, 40.29%, and
+23.10%</strong>, respectively).</p>
+</blockquote>
+<p>Separately: overlap <strong>with other agreement phenomena</strong> runs 15.26%–23.17%, against
+5.72%–8.23% for non-agreement phenomena.</p>
+<h2 id="the-fault-is-the-word-within">the fault is the word "within"</h2>
+<p>The three figures are <strong>within-category</strong> overlaps — how much the same units recur
+across instances of <em>one</em> agreement type. The audit's phrasing, "agreement categories
+(subject-verb: 40.29%, anaphor: 23.10%, determiner-noun: 68.91%) recruit overlapping
+units", reads as overlap <em>between</em> the categories. Different quantities.</p>
+<p>The statistic that carries the paper's finding is the <strong>within-versus-cross
+contrast</strong>, and the paper reports the three numbers as <em>drivers of</em> that contrast
+(t = 2.07, p = 0.0312) — not as a ranking of agreement types by importance.</p>
+<h2 id="why-it-matters-for-this-argument">why it matters for this argument</h2>
+<p>The inference being made is roughly: <em>determiners are represented most strongly, so
+<code>no X</code> is processed by the strongest functional machinery, so a detector reading
+function-word-initial clauses misses it in a principled way.</em></p>
+<p>That inference needs <strong>cross-category</strong> overlap — specifically, that determiner units
+are shared with, or recruit, units serving other constructions. The paper measures
+cross-category agreement overlap at <strong>15.26%–23.17%</strong>, a single pooled band, without
+a per-type breakdown in the abstract or this passage.</p>
+<p>So the strong reading is <strong>not supported by this row</strong>. It is not refuted either. The
+paper is compatible with it. That makes it a probe worth running, not a citation to
+lean on.</p>
+<h2 id="what-would-settle-it">what would settle it</h2>
+<p>Read the paper's per-type cross-category overlap matrix (Figures 3–4 and appendices)
+for the determiner-noun category specifically. If determiner units overlap
+substantially more with other categories than subject-verb units do, the audit's
+inference is supported by data already collected. If the matrix pools them, the
+inference needs a new measurement.</p>
+<p>That is a read of an existing figure, not an experiment — cheap, and it either
+upgrades the argument or downgrades it to a hypothesis.</p>
+<h2 id="related">related</h2>
+<ul>
+<li><code>are-function-word-heads-a-general-llm-finding.md</code> — the other tier-1 row, whose
+  subject is GPT-2 rather than LLMs</li>
+<li><code>whose-paper-is-where-meaning-lives.md</code> — the attribution fault in the same table</li>
+<li><code>../raw/function-word-and-agreement-papers.md</code> — full source table for this audit</li>
+</ul><p class="foot">Source: <a href="https://github.com/7not-nico/llm-investigations/blob/main/llm-semantic-weight/granular-investigation/do-determiners-recruit-the-most-shared-units.md">repo</a></p></body></html>

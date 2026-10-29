@@ -1,0 +1,175 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>llm-item-omission — meta audit</title><meta name="description" content="meta audit"><meta name="robots" content="index, follow"><link rel="canonical" href="https://7not-nico.github.io/llm-investigations/llm-item-omission/"><style>body{font-family:system-ui,sans-serif;max-width:760px;margin:2rem auto;padding:0 1rem;line-height:1.6;color:#222}
+h1{font-size:1.5rem}h2{font-size:1.2rem;margin-top:1.8rem}h3{font-size:1.05rem}
+a{color:#0969da;text-decoration:none}a:hover{text-decoration:underline}
+code,pre{background:#f6f8fa;border-radius:4px}pre{padding:.6rem;overflow-x:auto}
+table{border-collapse:collapse;width:100%}th,td{border:1px solid #ddd;padding:.3rem .5rem;font-size:.9rem}
+nav{background:#f6f8fa;border:1px solid #ddd;border-radius:6px;padding:.5rem .8rem;margin-bottom:1.5rem}
+nav a{margin-right:.6rem;white-space:nowrap}.foot{margin-top:2rem;color:#666;font-size:.85rem}
+</style></head><body><nav>
+<a href="../">home</a>
+<a href="../llm-item-omission/">item-omission</a>
+<a href="../llm-operator-meta-audit/">operator-meta-audit</a>
+<a href="../llm-semantic-weight/">semantic-weight</a>
+<a href="../llm-specification-gotcha-contraction/">specification-gotcha</a>
+</nav><h1>meta audit</h1><hr />
+<p>id: INV.LLM.OMIT.ITEM
+title: What Predicts Under-Production Against an Enumerated Request
+summary: Cross-region investigation into why a model emits fewer items than an
+  instruction enumerated, when it demonstrably holds all of them. Covers omission
+  under production, scope conformance, item salience, self-reference, and
+  position effects in enumerated-output instruction following. Distinct from
+  INV.LLM.SPEC.CONTRACT (gotcha vs contraction) and INV.LLM.OPERATOR (operator
+  fidelity): both of those study PROHIBITION, and neither can see under-production
+  because an item can be silently absent from an instruction that prohibits
+  nothing at all.
+tags: [llm, instruction-following, omission, under-production, scope-conformance,
+  enumerated-output, self-reference, position-effect, compliance, salience]
+tables: [regions, sources, researchers, meta_analyses, gaps, fundamentals,
+  hypotheses, confound_audit]</p>
+<hr />
+<p><strong>Core question</strong>: what predicts a model's failure to emit all the items an
+instruction enumerated?</p>
+<p><strong>Answer so far: UNANSWERABLE from our own corpus, by construction.</strong> The eval that
+produced 61 cases and 16 failures varies model, framing, context length, scope and
+difficulty — and varies nothing about item identity. Every expected set in every case
+requests a <code>model</code> item, so the corpus has no contrast on <em>which item</em> is dropped and
+cannot distinguish a self-reference effect from a position effect from plain
+forgetting. The omission question is not unanswered because the literature is thin.
+It is unanswered because the axis was never varied.</p>
+<p>Pattern: prohibited-item → absent-item → unmeasured-item-identity</p>
+<h2 id="why-this-is-a-separate-investigation-and-not-a-fourth-tier-of-another">why this is a separate investigation and not a fourth tier of another</h2>
+<p>The three sibling <code>llm-*</code> audits study the <em>constraint</em>: its polarity
+(<code>INV.LLM.SPEC.CONTRACT</code>), its operator encoding (<code>INV.LLM.OPERATOR</code>), and the
+internal representation of its function words (<code>INV.LLM.SEM.WEIGHT</code>). All three
+are about <strong>negative specification</strong> — what the model was told not to do.</p>
+<p>Under-production is orthogonal to that. An instruction can enumerate four items,
+prohibit nothing, and the model emits three. No prohibition is present to fail, so
+every prohibition-frame detector in the sibling audits reads it as unconstrained —
+correctly, and uselessly. Measured on the drift corpus: scope restriction appears in
+<strong>14 of 14</strong> unique steer texts and polarity in <strong>7 of 14</strong>, so the prohibition
+literature is looking at the minority form of what these instructions actually do.</p>
+<h2 id="the-confound-stated-as-a-finding-rather-than-a-caveat">the confound, stated as a finding rather than a caveat</h2>
+<p>From <code>model-drift-protocol/cases.json</code> (61 cases, 16 failures):</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>count</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>cases whose <code>expected</code> set includes a <code>model</code> item</td>
+<td><strong>61 / 61</strong></td>
+</tr>
+<tr>
+<td>failures whose <code>expected</code> set includes a <code>model</code> item</td>
+<td><strong>16 / 16</strong></td>
+</tr>
+<tr>
+<td>failures whose notes record the <code>model</code> item specifically missing</td>
+<td>6</td>
+</tr>
+<tr>
+<td>failures with a <code>model</code> item present in <code>expected</code> and present in the response</td>
+<td>the rest</td>
+</tr>
+</tbody>
+</table>
+<p>Because the item is requested in <strong>every</strong> case, <code>model</code> is always a candidate for
+omission and is never contrasted against an alternative. The recurring observation
+("third straight model-drop on listing tasks", <code>r6-2-omission</code>) is therefore
+<strong>consistent with three hypotheses that make different predictions</strong> and is currently
+evidence for none of them.</p>
+<p>This is the same shape as two defects already recorded elsewhere in this workspace:
+constraint-form saturation (scope present in 14/14, zero variance) and a denominator
+mismatch (2 lanes sharing 1 steer text, read as 2 sends). <strong>An instrument with no
+variance on the variable cannot rank on it.</strong></p>
+<h2 id="the-four-hypotheses-and-why-they-separate">the four hypotheses, and why they separate</h2>
+<p>Stated as a RANKING rather than a set, because a theory that only says "include these
+too" agrees with every measurement and certifies nothing.</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>hypothesis</th>
+<th>prediction</th>
+<th>what would refute it</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>H1</strong></td>
+<td>self-reference — items requiring the model to report on itself are dropped preferentially</td>
+<td>omission rate on self-referential items exceeds omission rate on non-self-referential items at matched position and matched item count</td>
+<td>equal rates</td>
+</tr>
+<tr>
+<td><strong>H2</strong></td>
+<td>enumeration load — each requested item costs a slot</td>
+<td>omission rate rises monotonically with the number of items requested</td>
+<td>flat or non-monotonic in item count</td>
+</tr>
+<tr>
+<td><strong>H3</strong></td>
+<td>position — the last item in the list is truncated</td>
+<td>omission rate on the final item exceeds the rate on earlier items, and the excess follows POSITION when the self-referential item moves</td>
+<td>omission follows the self-referential item when it moves to the middle</td>
+</tr>
+<tr>
+<td><strong>H4</strong></td>
+<td>constraint tension — a scope restriction competing with a default behaviour causes under-production</td>
+<td>omission rate rises when a scope restriction is present, at matched item count and matched framing</td>
+<td>no difference</td>
+</tr>
+</tbody>
+</table>
+<p><strong>H1 and H3 are the decisive pair and they separate with one move.</strong> Put the
+self-referential item in the MIDDLE of a four-item request. If omission follows the
+item, H1 holds. If omission follows the slot, H3 holds. That single arm separates
+them; no other arm does.</p>
+<p>A fifth, recorded because the sibling audit raises it and not because this audit
+assumes it: <strong>H5 reasoning-capacity tension</strong> — the MathIF line in
+<code>INV.LLM.SPEC.CONTRACT</code> reports that models reasoning more effectively struggle to
+comply with directives, and that reasoning-oriented tuning degrades instruction
+adherence as generation length grows. If under-production scales with reasoning
+effort rather than with request shape, the four hypotheses above are all measuring a
+proxy.</p>
+<h2 id="why-the-audit-must-not-assume-its-own-answer">why the audit must not assume its own answer</h2>
+<p>The drift corpus's own fixes were STRUCTURAL — order <code>model FIRST</code> in NEXT, and the
+bare-BODY canonical form (<code>03-corrections.md</code>) — and the working fix targeted
+<strong>position</strong>, which is H3. Two fixes reduced omission without changing any
+prohibition, which is consistent with a positional mechanism and inconsistent with a
+polarity mechanism.</p>
+<p><strong>That is a hint from a corpus of 15 verdicts, and it is exactly the kind of hint
+this audit exists to test rather than adopt.</strong> It is recorded here as the first thing
+a designed arm should try to refute, because an audit that begins from its own
+workspace's preferred answer will find it in every paper.</p>
+<h2 id="what-this-investigation-must-produce">what this investigation must produce</h2>
+<ul>
+<li><strong>a confound audit</strong> of the existing 61-case corpus, naming every axis that is
+  saturated, absent, or confounded by construction — so the next eval is designed
+  rather than accumulated</li>
+<li><strong>a designed arm</strong> that varies item identity, item count, and item position
+  independently, which the existing corpus does not vary at all</li>
+<li><strong>per-item omission rates</strong> by item type, which requires a labelling scheme for item
+  types that does not yet exist</li>
+<li><strong>an explicit boundary</strong>: this audit asks what predicts omission in an enumerated
+  request. It does not reopen the prohibition question — <code>INV.LLM.SPEC.CONTRACT</code>
+  falsified that, at n=15, and the falsification stands</li>
+</ul>
+<h2 id="falsified-already-do-not-rebuild">falsified already, do not rebuild</h2>
+<ul>
+<li><strong>negative framing does not predict drift</strong> — <code>INV.LLM.SPEC.CONTRACT</code>, n=15
+  verdicts, <code>no X</code> present 50% vs absent 44%. Replicated at tier granularity; the
+  tier axis collapses onto the same partition. Stands.</li>
+<li><strong>the tier-2 / tier-3 split does not separate</strong> — the same replication. Stands.</li>
+<li><strong>a declarative rewrite is not shown to remove failure</strong> — the 81% figure is
+  cross-linguistic VARIANCE reduction, not a compliance rate. Stands.</li>
+</ul>
+<h2 id="data">data</h2>
+<p><code>_schema/db.sql</code> — additive only, <code>ALTER TABLE ADD COLUMN</code>, never DROP. Carries
+<code>hypotheses</code> and <code>confound_audit</code> beyond the sibling audits' table set, because an
+audit that expects to be wrong needs somewhere to record what it was wrong about.</p>
+<p>Records land in <code>raw/</code> (what was fetched) and one concern per file in
+<code>granular-investigation/</code> (what the fetching established).</p></body></html>

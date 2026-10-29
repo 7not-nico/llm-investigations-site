@@ -1,0 +1,77 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>llm-specification-gotcha-contraction — Do middle and early layers disagree about negation?</title><meta name="description" content="Do middle and early layers disagree about negation?"><meta name="robots" content="index, follow"><link rel="canonical" href="https://7not-nico.github.io/llm-investigations/llm-specification-gotcha-contraction/granular-investigation/do-middle-and-early-layers-disagree-about-negation.html"><style>body{font-family:system-ui,sans-serif;max-width:760px;margin:2rem auto;padding:0 1rem;line-height:1.6;color:#222}
+h1{font-size:1.5rem}h2{font-size:1.2rem;margin-top:1.8rem}h3{font-size:1.05rem}
+a{color:#0969da;text-decoration:none}a:hover{text-decoration:underline}
+code,pre{background:#f6f8fa;border-radius:4px}pre{padding:.6rem;overflow-x:auto}
+table{border-collapse:collapse;width:100%}th,td{border:1px solid #ddd;padding:.3rem .5rem;font-size:.9rem}
+nav{background:#f6f8fa;border:1px solid #ddd;border-radius:6px;padding:.5rem .8rem;margin-bottom:1.5rem}
+nav a{margin-right:.6rem;white-space:nowrap}.foot{margin-top:2rem;color:#666;font-size:.85rem}
+</style></head><body><nav>
+<a href="../">home</a>
+<a href="../llm-item-omission/">item-omission</a>
+<a href="../llm-operator-meta-audit/">operator-meta-audit</a>
+<a href="../llm-semantic-weight/">semantic-weight</a>
+<a href="../llm-specification-gotcha-contraction/">specification-gotcha</a>
+</nav><h1>Do middle and early layers disagree about negation?</h1><h1 id="do-middle-and-early-layers-disagree-about-negation">Do middle and early layers disagree about negation?</h1>
+<p><strong>Concern:</strong> three verified papers all locate negation's failure mechanism, and they
+give three different layer windows. Does the audit's tier table depend on picking one?</p>
+<p><strong>Status: the papers do not agree, and the audit's early/late split is a different
+claim from any of them.</strong></p>
+<h2 id="the-three-layer-windows">the three layer windows</h2>
+<table>
+<thead>
+<tr>
+<th>source</th>
+<th>window</th>
+<th>what it claims</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>arXiv:2601.08070</code> (Semantic Gravity Wells, Rana)</td>
+<td><strong>23–27</strong></td>
+<td>activation patching there flips the sign of constraint effects</td>
+</tr>
+<tr>
+<td><code>arXiv:2511.12381</code> (Don't Think of the White Bear, Mann et al.)</td>
+<td><strong>middle-layer</strong> heads amplify forbidden tokens, <strong>early</strong> layers suppress</td>
+<td>circuit tracing</td>
+</tr>
+<tr>
+<td><code>arXiv:2605.03052</code> (How Language Models Process Negation, Zhou et al.)</td>
+<td><strong>mid-layer</strong> construction of a ¬Y representation; <strong>late-layer</strong> attention is the shortcut source of wrong answers</td>
+<td>Mistral-7B, Llama-3.1-8B</td>
+</tr>
+</tbody>
+</table>
+<p>The first is a specific numeric window in one model family. The other two are
+relative descriptions in others. They are not necessarily in conflict — "middle" can
+mean different things across model depths — but they cannot be quoted as one finding
+either.</p>
+<h2 id="the-fourth-claim-which-is-the-audits">the fourth claim, which is the audit's</h2>
+<p><code>arXiv:2604.06015</code> (Rocchetti &amp; Ferrara) reports tasks stratify by complexity across
+layers, <em>"with structural constraints emerging early and semantic tasks emerging
+late"</em>.</p>
+<p>That is a claim about <strong>constraint type</strong>, not about prohibition and not about
+negation. The audit's tier table uses it as though it were the layer story for
+negative constraints. It is a different measurement.</p>
+<h2 id="why-this-matters-for-the-tier-table">why this matters for the tier table</h2>
+<p>The audit layers two things into one depth story:</p>
+<ol>
+<li><em>constraint processing depth</em> — early for structural, late for semantic (Rocchetti &amp; Ferrara)</li>
+<li><em>negation processing depth</em> — where suppression fails (Rana), where construction happens (Zhou et al.), where priming amplifies (Mann et al.)</li>
+</ol>
+<p>These are compatible but independent. Reading them as one chain — "prohibitions are
+semantic, therefore late, therefore tier 3 is fragile" — is an inference the sources
+do not license, and it is the chain that makes tier 3 look like the weak one.</p>
+<p>Notably, the one source with a measured causal window (23–27, late) is the one whose
+scope does not cover the audit's behavioural tier. The mechanism the audit leans on
+is the mechanism measured least, and the mechanism measured most was scoped out.</p>
+<h2 id="what-to-write-instead">what to write instead</h2>
+<p>Two sentences, cited separately: one for constraint depth, one for negation depth.
+No merged claim, and no layer number without naming its model family.</p>
+<h2 id="related">related</h2>
+<ul>
+<li><code>does-priming-evidence-transfer-to-output-shape-prohibitions.md</code> — why the one
+  causally-patched source has the wrong scope for tier 3</li>
+<li><code>../raw/negative-constraint-papers.md</code> — full source table for this audit</li>
+</ul><p class="foot">Source: <a href="https://github.com/7not-nico/llm-investigations/blob/main/llm-specification-gotcha-contraction/granular-investigation/do-middle-and-early-layers-disagree-about-negation.md">repo</a></p></body></html>

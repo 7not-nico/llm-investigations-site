@@ -1,0 +1,160 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>llm-specification-gotcha-contraction — Negative-constraint papers — resolved against primary sources</title><meta name="description" content="Negative-constraint papers — resolved against primary sources"><meta name="robots" content="index, follow"><link rel="canonical" href="https://7not-nico.github.io/llm-investigations/llm-specification-gotcha-contraction/raw/negative-constraint-papers.html"><style>body{font-family:system-ui,sans-serif;max-width:760px;margin:2rem auto;padding:0 1rem;line-height:1.6;color:#222}
+h1{font-size:1.5rem}h2{font-size:1.2rem;margin-top:1.8rem}h3{font-size:1.05rem}
+a{color:#0969da;text-decoration:none}a:hover{text-decoration:underline}
+code,pre{background:#f6f8fa;border-radius:4px}pre{padding:.6rem;overflow-x:auto}
+table{border-collapse:collapse;width:100%}th,td{border:1px solid #ddd;padding:.3rem .5rem;font-size:.9rem}
+nav{background:#f6f8fa;border:1px solid #ddd;border-radius:6px;padding:.5rem .8rem;margin-bottom:1.5rem}
+nav a{margin-right:.6rem;white-space:nowrap}.foot{margin-top:2rem;color:#666;font-size:.85rem}
+</style></head><body><nav>
+<a href="../">home</a>
+<a href="../llm-item-omission/">item-omission</a>
+<a href="../llm-operator-meta-audit/">operator-meta-audit</a>
+<a href="../llm-semantic-weight/">semantic-weight</a>
+<a href="../llm-specification-gotcha-contraction/">specification-gotcha</a>
+</nav><h1>Negative-constraint papers — resolved against primary sources</h1><h1 id="negative-constraint-papers-resolved-against-primary-sources">Negative-constraint papers — resolved against primary sources</h1>
+<p><strong>Date:</strong> 2026-10-01
+<strong>Subject:</strong> the papers behind the gotcha / contraction tiers of <code>../meta-audit.md</code>
+<strong>Method:</strong> <code>curl</code> on <code>arxiv.org/abs/&lt;id&gt;</code>, metadata read from <code>citation_title</code> /
+<code>citation_author</code> / <code>citation_date</code> / <code>citation_abstract</code> meta tags; ACL Anthology
+records read from the embedded BibTeX. Every claim below is checked against the
+paper's own abstract text, not against a search snippet.</p>
+<h2 id="queries">Queries</h2>
+<ol>
+<li><code>Semantic Gravity Wells arXiv 2601.08070 negative constraint priming</code></li>
+<li><code>Don't think of the white bear ironic rebound arXiv 2511.12381</code></li>
+<li><code>imperative declarative register cross-lingually arXiv 2603.25015 Mason</code></li>
+<li><code>Rocchetti Ferrara skill coordination constraint following arXiv 2604.06015</code></li>
+<li><code>"Negative Instruction Cascade" Zenodo 2025 threshold</code></li>
+</ol>
+<h2 id="sources-fetched">Sources Fetched</h2>
+<table>
+<thead>
+<tr>
+<th>Source</th>
+<th>Institution</th>
+<th>Type</th>
+<th>Key Content</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>arXiv:2601.08070 — <em>Semantic Gravity Wells: Why Negative Constraints Backfire</em></td>
+<td>Rana, Shailesh (single author)</td>
+<td>paper, cs.AI</td>
+<td>2026-01-12, 10pp/8 figures. <code>p = σ(-2.40 + 2.27·P₀)</code>, n=40,000, slope CI [2.21, 2.33]. Suppression present but weaker in failures: −5.2pp vs −22.8pp (4.4× asymmetry). Priming failure 87.5% of violations; override failure 12.5% with +0.39 late-layer FFN. Layers 23–27 causally responsible by activation patching.</td>
+</tr>
+<tr>
+<td>arXiv:2511.12381 — <em>Don't Think of the White Bear: Ironic Negation in Transformer Models Under Cognitive Load</em></td>
+<td>Mann, Saxena, Tandon, Sun, Soteja, Zhu</td>
+<td>paper, cs</td>
+<td>2025-11-15. Rebound arises immediately after negation, intensifies with longer/semantic distractors, repetition supports suppression. Stronger polarity separation ⇒ more persistent rebound. Circuit tracing finds sparse <strong>middle-layer</strong> heads amplifying forbidden tokens while <strong>early</strong> layers suppress. Releases ReboundBench, 5,000 negation prompts.</td>
+</tr>
+<tr>
+<td>arXiv:2603.25015 — <em>Imperative Interference: Social Register Shapes Instruction Topology in Large Language Models</em></td>
+<td>Mason, Tony (single author)</td>
+<td>paper, cs.CL/cs.AI/cs.SE</td>
+<td>2026-03-26. Instruction-level ablation across 4 languages × 4 models. English imperative cooperates, Spanish imperative competes. Declarative rewriting of one block cuts cross-linguistic variance <strong>81%</strong> (p=0.029, permutation test). Rewriting 3 of 11 imperative blocks flips Spanish topology cooperative, with spillover. Framing: <code>"NEVER do X"</code> is an exercise of authority, <code>"X: disabled"</code> is a factual description that transfers. 22 probes against a 56-block production system prompt.</td>
+</tr>
+<tr>
+<td>arXiv:2604.06015 — <em>How LLMs Follow Instructions: Skillful Coordination, Not a Universal Mechanism</em></td>
+<td>Rocchetti, Elisabetta; Ferrara, Alfio</td>
+<td>paper, cs</td>
+<td>2026-04-07, rev. 2026-09-10. Nine tasks, three instruction-tuned models. General probes show selective not uniform deficits; cross-task transfer weak and clustered by skill similarity; causal ablation shows sparse asymmetric dependencies. "Tasks stratify by complexity across layers, with structural constraints emerging early and semantic tasks emerging late." Constraint signal decodable only once generation is underway.</td>
+</tr>
+<tr>
+<td>DOI 10.5281/zenodo.18855895 — <em>The Negative Instruction Cascade: An Empirical Analysis of LLM Prompt Engineering Failure Modes</em></td>
+<td>Hilliard, Matty (single author)</td>
+<td><strong>preprint, self-published</strong></td>
+<td>2025-03-03. Three JSON-instruction versions (v1.1 → v2.1 → v3.0); Claude identified a <strong>~40%</strong> negative-restriction threshold for breakdown behaviour, <strong>&gt;60%</strong> static loops "inevitable". Recommends ≥3:1 positive-to-negative. PDF in this folder.</td>
+</tr>
+</tbody>
+</table>
+<h2 id="verification-verdict">Verification verdict</h2>
+<p><strong>VERIFIED — <code>Semantic Gravity Wells</code>, and its scope is narrower than this audit uses it.</strong></p>
+<p>The paper's own first sentence defines its intervention: <em>"Negative constraints
+(instructions of the form 'do not use word X')"</em>. Every number in it — the
+logistic fit, the 4.4× suppression asymmetry, the 87.5/12.5 split, layers 23–27 —
+is measured on <strong>token-level bans</strong>, where the forbidden item is a specific token
+whose probability is well defined.</p>
+<p>This audit generalizes the 87.5% priming figure to behavioural/style prohibitions
+("Don't be verbose") and to the contraction tier generally. The paper does not
+support that transfer: its mechanism is that <em>naming a forbidden word activates it</em>,
+which is a claim about the referent being a word. An instruction forbidding an
+output <strong>shape</strong> (<code>no summary</code>, <code>no invented files</code>) does not name a token, so the
+mechanism is not the same operation. The figure is real and the generalization is a
+separate claim needing its own evidence.</p>
+<p><strong>VERIFIED — <code>Don't Think of the White Bear</code>.</strong> Circuit result matches: sparse
+middle-layer amplification against early-layer suppression. Note this is a
+different model family and layer window from Semantic Gravity Wells' layers 23–27,
+so the two papers' layer numbers should not be merged into one claim.</p>
+<p><strong>VERIFIED — <code>Imperative Interference</code>.</strong> The 81% figure, the English/Spanish
+inversion, and the <code>"X: disabled"</code> mitigation form are all in the abstract. This is
+the load-bearing source for a declarative rewrite as mitigation, and it measures
+<strong>register across languages</strong> — not prohibition strength.</p>
+<p><strong>VERIFIED — <code>Skillful Coordination</code>.</strong> Confirms the early-structural / late-semantic
+split this audit's tier table rests on.</p>
+<p><strong>REFUTED AS CITED — <code>Negative Instruction Cascade</code> is not a paper.</strong> My first two
+passes on this got it wrong in opposite directions: I recorded it UNRESOLVED, then
+near-verified it on the strength of its Zenodo abstract. Both were mistakes, and
+the correction is the substantive finding here.</p>
+<p>The record exists — DOI <code>10.5281/zenodo.18855895</code>, "The Negative Instruction
+Cascade: An Empirical Analysis of LLM Prompt Engineering Failure Modes", Hilliard,
+Matty, 2025-03-03, resource type <strong>Preprint</strong>, self-published. But <strong>it contains no
+paper.</strong> The record deposits exactly two files, both retrieved into this folder:</p>
+<table>
+<thead>
+<tr>
+<th>file</th>
+<th>size</th>
+<th>what it actually is</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>zenodo-18855895-WhatweShould.txt</code></td>
+<td>19,829 B</td>
+<td><em>"A Philosophical Rationalization: 'Not What We Shouldn't, Rather What We Should'"</em> — an essay on affirmative design, with an embedded conference-style abstract</td>
+</tr>
+<tr>
+<td><code>zenodo-18855895-MistralMemorySetting.txt</code></td>
+<td>4,688 B</td>
+<td><em>"Matty Hilliard's Permanent Memory Rules for Mistral Chat (Positive Framing)"</em> — a personal system prompt of beacons, <code>/precise</code> and <code>/silent</code> shortcuts, a custom macro layer</td>
+</tr>
+</tbody>
+</table>
+<p>There is no PDF, no methods section, no data, no model runs, no sample size, and no
+reference anywhere in either file to the "v1.1 -&gt; v2.1 -&gt; v3.0" instruction versions
+the Zenodo description says the analysis covers. The title this audit cites exists as
+a <strong>quoted string</strong> inside the system-prompt file: that file opens by reporting that
+the file "The Negative Instruction Cascade: An Empirical Analysis of LLM Prompt
+Engineering Failure Modes.txt" exists and begins as follows, then pastes the supposed
+paper's abstract. The paper's entire content is that pasted abstract.</p>
+<p><strong>The audit's number is not in the artifact.</strong> The "&gt;40% negative threshold -&gt;
+breakdown" claim appears <strong>only in the Zenodo record's own metadata description</strong>.
+The deposited text carries a <em>different</em> set of figures, none of which is a
+threshold: 47% higher violation rate under negative framing, 33% slower task
+completion, 62% more clarifying questions, and separately "positive framing reduces
+violations by 40%". A 40% in metadata and a 40% <em>reduction</em> in the essay are easy to
+conflate, and the audit's phrasing reads as though it did.</p>
+<p>So the source is real, the title is real, the author is real, and the threshold
+claim has <strong>no artifact behind it</strong>. That is not weak evidence — it is the absence
+of evidence carrying a citation, and the audit cites it as one of several convergent
+sources for the tier.</p>
+<h2 id="open-divergence">Open divergence</h2>
+<p>Three of the four arXiv papers locate the failure mechanism in <strong>middle or late</strong>
+layers; the audit's own tier table is built on an early/late split sourced from
+Rocchetti &amp; Ferrara, which is about <em>constraint type</em>, not about prohibition. Two
+different things are being layered here — constraint processing depth and negation
+processing depth — and they should be cited as two claims, not one.</p>
+<p>There is a <strong>strength inversion across the gotcha tier's own sources</strong>: the
+best-evidenced claim in this folder (token-level bans, n=40,000 samples with a
+bootstrap CI, mechanistic, causally patched) is the one whose scope does <em>not</em>
+reach style prohibitions, while the claim that <em>does</em> cover the audit's behavioural
+tier is a metadata string with no artifact behind it. <strong>The tier that reads as most
+dangerous in the audit is the tier with the weakest support in the folder.</strong></p>
+<p>This is the third time in this session that a source's <em>plausibility</em> was mistaken
+for its <em>content</em>: Semantic Gravity Wells' 87.5% transposed from tokens onto output
+shapes, the Gemma-2-27B negation row, and now this. A citation that arrives without
+a resolvable artifact is not a source — and a table shaped as <code>paper | venue |
+finding</code> renders an empty row identically to a full one, so nothing in the audit's
+layout signals the difference.</p><p class="foot">Source: <a href="https://github.com/7not-nico/llm-investigations/blob/main/llm-specification-gotcha-contraction/raw/negative-constraint-papers.md">repo</a></p></body></html>

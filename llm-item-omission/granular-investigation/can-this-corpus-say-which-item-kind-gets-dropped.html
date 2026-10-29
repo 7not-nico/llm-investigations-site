@@ -1,0 +1,138 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>llm-item-omission — Can this corpus say which item kind gets dropped?</title><meta name="description" content="Can this corpus say which item kind gets dropped?"><meta name="robots" content="index, follow"><link rel="canonical" href="https://7not-nico.github.io/llm-investigations/llm-item-omission/granular-investigation/can-this-corpus-say-which-item-kind-gets-dropped.html"><style>body{font-family:system-ui,sans-serif;max-width:760px;margin:2rem auto;padding:0 1rem;line-height:1.6;color:#222}
+h1{font-size:1.5rem}h2{font-size:1.2rem;margin-top:1.8rem}h3{font-size:1.05rem}
+a{color:#0969da;text-decoration:none}a:hover{text-decoration:underline}
+code,pre{background:#f6f8fa;border-radius:4px}pre{padding:.6rem;overflow-x:auto}
+table{border-collapse:collapse;width:100%}th,td{border:1px solid #ddd;padding:.3rem .5rem;font-size:.9rem}
+nav{background:#f6f8fa;border:1px solid #ddd;border-radius:6px;padding:.5rem .8rem;margin-bottom:1.5rem}
+nav a{margin-right:.6rem;white-space:nowrap}.foot{margin-top:2rem;color:#666;font-size:.85rem}
+</style></head><body><nav>
+<a href="../">home</a>
+<a href="../llm-item-omission/">item-omission</a>
+<a href="../llm-operator-meta-audit/">operator-meta-audit</a>
+<a href="../llm-semantic-weight/">semantic-weight</a>
+<a href="../llm-specification-gotcha-contraction/">specification-gotcha</a>
+</nav><h1>Can this corpus say which item kind gets dropped?</h1><h1 id="can-this-corpus-say-which-item-kind-gets-dropped">Can this corpus say which item kind gets dropped?</h1>
+<p><strong>Concern:</strong> <code>fail-omission</code> is the most common verdict in the drift corpus, and
+six failure notes specifically record the <em>same</em> item going missing. Does the corpus
+support an inference about which KIND of item is omission-prone?</p>
+<p><strong>Status: NO. Item identity has zero variance. The observation is consistent with
+three hypotheses that make different predictions and is evidence for none of them.</strong></p>
+<h2 id="what-was-measured">what was measured</h2>
+<p>From <code>model-drift-protocol/cases.json</code> — 61 cases, 16 failures:</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>count</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>cases whose <code>expected</code> set includes a <code>model</code> item</td>
+<td><strong>61 / 61</strong></td>
+</tr>
+<tr>
+<td>failures whose <code>expected</code> set includes a <code>model</code> item</td>
+<td><strong>16 / 16</strong></td>
+</tr>
+<tr>
+<td>failure notes recording the <code>model</code> item specifically missing</td>
+<td>6</td>
+</tr>
+</tbody>
+</table>
+<p>The six notes are near-identical in phrasing, and one says so outright:</p>
+<ul>
+<li><code>r5-invention-omission</code> — "names all correct (7/7 on disk), <strong>model dropped</strong>"</li>
+<li><code>r6-3-omission</code> — "7/7 names correct + explicit scope bound, <strong>model dropped</strong>"</li>
+<li><code>r6-2-omission</code> — "head-3 exact, <strong>model dropped</strong> — third straight model-drop on listing tasks"</li>
+<li><code>longcat-r10-2-scopewalk</code> — "asked head-3, emitted 3 of many (under-answer); <strong>model field dropped</strong>"</li>
+<li><code>r5-summary-drift</code> — filenames present but annotated with commentary; model item also dropped</li>
+<li><code>r2-2-drift</code> — the inverse: model-only, <code>date+echo</code> dropped</li>
+</ul>
+<h2 id="why-the-observation-licenses-no-inference">why the observation licenses no inference</h2>
+<p>The <code>model</code> item is requested in <strong>every single case</strong>. That has two consequences
+that pull in opposite directions, and the corpus cannot tell them apart:</p>
+<ol>
+<li>If omission follows the item's <strong>kind</strong> — because self-referential items are
+   harder, less salient, or require an access the model does not have — then <code>model</code>
+   drops disproportionately often.</li>
+<li>If omission follows <strong>presence</strong> — the item that is in every request is in every
+   request's candidate set, so it accumulates more opportunities to drop, and the
+   other items simply have fewer chances — then <code>model</code> drops proportionally and
+   nothing about self-reference is involved.</li>
+</ol>
+<p><strong>A variable present in 100% of trials has no contrast, so it cannot be ranked
+against anything.</strong> Every case offers <code>model</code> as a candidate; no case offers a
+non-self-referential item in the same slot as a competitor. The recurring drop is
+consistent with a real effect and equally consistent with the base rate.</p>
+<p>The one datum that <em>looks</em> like it discriminates — <code>r2-2-drift</code>, where <code>model</code>
+survived and <code>date+echo</code> went — argues <strong>against</strong> a pure self-reference effect, and
+the record does not treat it that way.</p>
+<h2 id="the-confound-and-it-is-the-same-shape-as-three-already-recorded">the confound, and it is the same shape as three already recorded</h2>
+<p>Four axes in this workspace's instruments are unanswerable for the same reason, and
+this is the fourth:</p>
+<table>
+<thead>
+<tr>
+<th>axis</th>
+<th>variance</th>
+<th>question needs</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>constraint form — scope</td>
+<td>saturated at 14/14</td>
+<td>present in ~half the arms</td>
+</tr>
+<tr>
+<td>constraint form — polarity</td>
+<td>present in 7/14</td>
+<td>matched difficulty, scope held fixed</td>
+</tr>
+<tr>
+<td>denominator</td>
+<td>21 sends → 14 unique texts</td>
+<td>one stated denominator per arm</td>
+</tr>
+<tr>
+<td><strong>item identity</strong></td>
+<td><strong>61/61, zero contrast</strong></td>
+<td><strong>two item kinds, crossed with position</strong></td>
+</tr>
+</tbody>
+</table>
+<p>Per <code>tooling-ranking-axis.txt</code>: an ordering assembled from unaligned subjects is a
+hypothesis in table form. Here there is no ordering at all — there is one subject.</p>
+<h2 id="what-the-corpus-can-support-and-it-is-not-nothing">what the corpus CAN support, and it is not nothing</h2>
+<p>Two things survive:</p>
+<ul>
+<li><strong>The dominant failure mode is under-production, not over-production.</strong> The scope-walk
+  notes say so in the record's own words: <em>"emitted 3 of many (under-answer, not
+  over)"</em>. That is a direction, and it is a fact about 15 verdicts.</li>
+<li><strong>The corpus's own working fixes were positional.</strong> <code>03-corrections.md</code>'s repairs
+  were ordering <code>model FIRST</code> in NEXT and the bare-BODY canonical form — the
+  operators moved <strong>position</strong>, not polarity. That is weak, consistent with H3, and
+  comes from 15 verdicts.</li>
+</ul>
+<p>The second is a hint, and it is why the audit begins by trying to refute it.</p>
+<h2 id="what-would-settle-it">what would settle it</h2>
+<p><strong>One arm separates the decisive pair.</strong> Put the self-referential item in the
+<strong>middle</strong> of a four-item request:</p>
+<ul>
+<li>omission follows the <strong>item</strong> wherever it sits → H1 (self-reference)</li>
+<li>omission follows the <strong>slot</strong> → H3 (position)</li>
+</ul>
+<p>No other arm separates those two, and both predict the same thing in the corpus as it
+stands. The full hypothesis set, each with its refutation condition, is seeded in
+<code>../_schema/db.sql</code> (<code>hypotheses</code> table).</p>
+<h2 id="related">related</h2>
+<ul>
+<li><code>../../llm-specification-gotcha-contraction/granular-investigation/does-priming-evidence-transfer-to-output-shape-prohibitions.md</code>
+  — the sibling blind spot: the prohibition literature cannot see absence, because an
+  item can be missing from an instruction that prohibits nothing</li>
+<li><code>../meta-audit.md</code> — the audit this file belongs to</li>
+<li><code>../_schema/seed.sql</code> — <code>confound_audit</code> rows c1 (item identity), c4 (denominator),
+  c5 (item count)</li>
+</ul><p class="foot">Source: <a href="https://github.com/7not-nico/llm-investigations/blob/main/llm-item-omission/granular-investigation/can-this-corpus-say-which-item-kind-gets-dropped.md">repo</a></p></body></html>
