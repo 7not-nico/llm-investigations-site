@@ -1,0 +1,5 @@
+title: llm-investigations
+description: Four LLM investigations rendered from markdown
+theme: minima
+baseurl: "/llm-investigations-site"
+url: "https://7not-nico.github.io"
